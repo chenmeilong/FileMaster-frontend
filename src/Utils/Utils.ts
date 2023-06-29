@@ -1,6 +1,3 @@
-export const toAbsoluteUrl = (pathname: string): string =>
-  process.env.PUBLIC_URL + pathname
-
 // 日期格式转换
 export const convertDate = (dateString: string): string => {
   const mydate = new Date(dateString)
@@ -10,7 +7,10 @@ export const convertDate = (dateString: string): string => {
 }
 
 // 文件大小计算，能够自适应单位和大小在1-1000以内
-export const formatBytes = (bytes: number, decimals = 2): string => {
+export const formatBytes = (
+  bytes: number | undefined,
+  decimals = 2
+): string => {
   if (bytes === 0) return '0 Bytes'
   if (bytes === undefined) return ''
   const k = 1024

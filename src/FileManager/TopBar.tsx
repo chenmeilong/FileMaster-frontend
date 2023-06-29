@@ -43,10 +43,10 @@ import { AviableButtons, ButtonType } from './types'
 
 type Props = {
   buttons: AviableButtons
-  filterSorting: any
+  filterSorting: () => void
   orderFiles: Order
   setImagesSettings: (imagePreview: string) => object
-  setSorting: any
+  setSorting: (orderBy: string, field: string) => void
   showImages: string
 }
 

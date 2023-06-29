@@ -24,11 +24,14 @@ const apiMiddleware =
     }
     // 这次的next用于 loading 使程序不至于卡死 告诉reduces正在请求中，但是这里可以将这行去掉
     next({ type: REQUEST })
+    const ContentType =
+      action.type === 'UPLOAD_FILES'
+        ? 'multipart/form-data'
+        : 'application/json'
     return axios({
       method: action.request.method,
       headers: {
-        'Content-Type': 'application/json',
-        cronustoken: window.localStorage.getItem('jwtToken')
+        'Content-Type': ContentType
       },
       url: `${apiUrl}${action.request.url}`,
       data: action.body

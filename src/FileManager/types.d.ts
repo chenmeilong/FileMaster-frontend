@@ -44,16 +44,13 @@ export interface Messages {
   timer?: number
 }
 
-// dialog 需要确认
+// dialog
 export interface Popup {
-  open?: boolean
-
-  // 其他都是可选的 todo
-  title?: string
-  description?: string
-  handleClose?: () => void
-  handleSubmit?: () => void
-  nameInputSets?: {
+  title: string
+  description: string
+  handleClose: null | (() => void)
+  handleSubmit: null | (() => void)
+  nameInputSets: {
     label?: string
     value?: string
     callBack?: (value: string) => void

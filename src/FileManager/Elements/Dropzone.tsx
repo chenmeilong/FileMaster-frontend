@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import { connect } from 'react-redux'
 // 上传文件与拖放
 import { useDropzone } from 'react-dropzone'
+import { uploadFile } from '@/Redux/actions'
 import { makeStyles } from '@material-ui/core/styles'
 import ButtonList from './ButtonGroupSimple'
-import { formatBytes } from '../../Utils/Utils'
+import { formatBytes } from '@/Utils/Utils'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -50,7 +52,7 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-// 上传文件下方的按钮组件 todo
+// 上传文件下方的按钮组件
 type Props = {
   currentFolder: string
   handleReload: () => void
@@ -115,6 +117,7 @@ const UploadFiles: React.FC<Props> = ({
       // 如何第二个参数是文件对象，则有第三个可选参数为文件名
       formData.append('files', file, file.name)
     })
+
     uploadFile(formData).then(() => {
       handleReload()
       handleCancel()
@@ -163,4 +166,6 @@ const UploadFiles: React.FC<Props> = ({
   )
 }
 
-export default UploadFiles
+const UploadFilesConnect = connect(null, { uploadFile })(UploadFiles)
+
+export default UploadFilesConnect

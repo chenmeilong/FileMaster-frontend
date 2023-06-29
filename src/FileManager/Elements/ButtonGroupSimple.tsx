@@ -29,7 +29,7 @@ type Props = {
     class?: string
     type?: string
     disabled?: boolean
-    onClick: any
+    onClick: () => void
   }[]
 }
 const ButtonGroupSimple: React.FC<Props> = ({ buttons }) => {

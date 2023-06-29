@@ -285,7 +285,7 @@ export function saveimage(file: string, path: string, isnew: boolean) {
   }
 }
 // body{path:string;files:二进制文件}
-export function uploadFile(body: object) {
+export function uploadFile(body: FormData) {
   return {
     type: UPLOAD_FILES,
     request: {

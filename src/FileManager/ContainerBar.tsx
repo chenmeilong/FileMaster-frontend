@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Menu, MenuItem, Divider, Box } from '@material-ui/core'
 import { DragDropContext } from 'react-beautiful-dnd'
-import { uploadFile } from '../Redux/actions'
 import useStyles from './Elements/Styles'
 import InfoBoxes from './Elements/InfoBoxes'
 import Dropzone from './Elements/Dropzone'
@@ -27,7 +26,6 @@ type Props = {
   uploadBox: boolean
   buttons: AviableButtons
   selectedFolder: string
-  uploadFile: any
 }
 
 const ContainerBar: React.FC<Props> = ({
@@ -110,7 +108,6 @@ const ContainerBar: React.FC<Props> = ({
         <Dropzone
           currentFolder={selectedFolder}
           handleReload={operations.handleReload}
-          uploadFile={uploadFile}
           handleCancel={operations.handleUpload}
         />
       )}
@@ -195,9 +192,7 @@ const ContainerBarConnect = connect(
   (store: Store) => ({
     selectedFolder: store.filemanager.selectedFolder
   }),
-  {
-    uploadFile
-  }
+  {}
 )(ContainerBar)
 
 export default ContainerBarConnect

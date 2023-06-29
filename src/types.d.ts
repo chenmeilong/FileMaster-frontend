@@ -1,3 +1,6 @@
+import { AxiosError } from 'axios'
+import { string } from 'prop-types'
+
 // 表示文件或文件夹的基本信息
 export interface Item {
   path: string
@@ -50,4 +53,10 @@ export interface FilemanagerStore {
 
 export interface Store {
   filemanager: FilemanagerStore
+}
+
+export interface AxiosError {
+  message?: string
+  type: string
+  error: object | string
 }

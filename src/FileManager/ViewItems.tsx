@@ -15,10 +15,11 @@ import { Droppable, Draggable } from 'react-beautiful-dnd'
 // 于处理条件性的类名或多个类名组合成一个字符串的情况
 import clsx from 'clsx'
 
-import { toAbsoluteUrl, convertDate, formatBytes } from '../Utils/Utils'
-import mainconfig from '../Data/Config'
-import useStyles from './Elements/Styles'
+import { convertDate, formatBytes } from '../Utils/Utils'
+import mainconfig from '@/Data/Config'
 import config from '@/Data/FilesConfig'
+
+import useStyles from './Elements/Styles'
 import { Store, Item, BufferedItems } from '@/types'
 
 type ItemProps = {
@@ -32,7 +33,12 @@ type Props = {
   doubleClick: (value: string, history?: boolean) => void
   filesList: Item[]
   itemsView: 'list' | 'grid'
-  onContextMenuClick: any
+  onContextMenuClick: (event: {
+    stopPropagation: () => void
+    preventDefault: () => void
+    clientX: number
+    clientY: number
+  }) => void
   selectedFiles: Item[]
   showImages: 'icons' | 'thumbs'
 }
@@ -65,13 +71,13 @@ const ViewItems: React.FC<Props> = ({
           throw new Error('no item.extension')
         } else {
           return item.extension in config.icons
-            ? toAbsoluteUrl(config.icons[item.extension])
-            : toAbsoluteUrl(config.icons.broken)
+            ? config.icons[item.extension]
+            : config.icons.broken
         }
       }
     } catch (error) {
       // 没找到对应的下图标显示搜索图标
-      return toAbsoluteUrl(config.icons.broken)
+      return config.icons.broken
     }
   }
   // 右键菜单
@@ -206,8 +212,8 @@ const ViewItems: React.FC<Props> = ({
                     <img
                       src={
                         snapshot.isDraggingOver
-                          ? toAbsoluteUrl(config.icons.folderopen)
-                          : toAbsoluteUrl(config.icons.folder)
+                          ? config.icons.folderopen
+                          : config.icons.folder
                       }
                     />
                   </div>
@@ -276,8 +282,8 @@ const ViewItems: React.FC<Props> = ({
                       style={{ width: '20px' }}
                       src={
                         snapshot.isDraggingOver
-                          ? toAbsoluteUrl(config.icons.folderopen)
-                          : toAbsoluteUrl(config.icons.folder)
+                          ? config.icons.folderopen
+                          : config.icons.folder
                       }
                     />
                   </TableCell>
@@ -292,7 +298,7 @@ const ViewItems: React.FC<Props> = ({
                     </div>
                   </TableCell>
                   <TableCell className={classes.tableCell} align="left">
-                    {item.size && formatBytes(item.size)}
+                    {formatBytes(item.size)}
                   </TableCell>
                   <TableCell className={classes.tableCell} align="left">
                     {convertDate(item.created)}
@@ -341,7 +347,7 @@ const ViewItems: React.FC<Props> = ({
               {item.name}
             </TableCell>
             <TableCell className={classes.tableCell} align="left">
-              {item.size && formatBytes(item.size)}
+              {formatBytes(item.size)}
             </TableCell>
             <TableCell className={classes.tableCell} align="left">
               {convertDate(item.created)}

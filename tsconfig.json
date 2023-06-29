@@ -24,7 +24,9 @@
     // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true
 
-    "allowJs": false,
+    "allowJs": true,
+    "checkJs": false,
+    "allowSyntheticDefaultImports": true,
     // 模块导入方式使用 CommonJS 还是  ES 模块规范 true表示为 ES 模块方式
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

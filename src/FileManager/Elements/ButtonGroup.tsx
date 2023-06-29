@@ -10,7 +10,7 @@ type Props = {
     icon: string
     label: string
     class: string
-    onClick: any
+    onClick: () => void
   }[]
 }
 

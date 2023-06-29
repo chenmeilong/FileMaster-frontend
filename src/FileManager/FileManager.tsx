@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import { Operations, Messages } from './types'
 import {
   setSelectedFiles,
   inverseSelectedFiles,
@@ -31,14 +30,14 @@ import FolderBar from './FolderBar'
 import TopBar from './TopBar'
 import ContainerBar from './ContainerBar'
 import PopupDialog from './Elements/PopupDialog'
+import mainconfig from '@/Data/Config'
 import config from '@/Data/FilesConfig'
-import mainconfig from '../Data/Config'
 import { convertDate, formatBytes } from '../Utils/Utils'
 import ImageEditor from './Elements/ImageEditor'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import './Assets/PerfectScroll.css'
-import { Popup, EditImage } from './types'
-import { Store, Item, BufferedItems, History, Steps } from '@/types'
+import { Popup, EditImage, Operations, Messages } from './types'
+import { Store, Item, BufferedItems, History, Steps, AxiosError } from '@/types'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -178,9 +177,18 @@ const FileManager: React.FC<Props> = ({
 
   const [editImage, setEditImage] = React.useState(editImageInital)
 
-  const [popupData, setPopup] = useState({
-    open: false
-  })
+  const popupDataInital: { open: boolean; popup: Popup } = {
+    open: false,
+    popup: {
+      title: '',
+      description: '',
+      handleClose: null,
+      handleSubmit: null,
+      nameInputSets: {}
+    }
+  }
+
+  const [popupData, setPopup] = useState(popupDataInital)
 
   // index需要跳转的位置
   // historyInfo跳转位置的值
@@ -199,14 +207,15 @@ const FileManager: React.FC<Props> = ({
   }
   // 关闭弹窗
   const handleClose = () => {
-    setPopup({
-      open: false
+    setPopup((state) => {
+      state.open = false
+      return state
     })
   }
   // 弹窗
   const handleClickPopupOpen = (data: Popup) => {
     setPopup({
-      ...data,
+      popup: data,
       open: true
     })
   }
@@ -288,12 +297,12 @@ const FileManager: React.FC<Props> = ({
             }
           ])
         })
-        .catch((error: any) => {
+        .catch((error: AxiosError) => {
           setMessages([
             {
               title: `Error happened while paste items`,
               type: 'error',
-              message: error.message
+              message: error.message || ''
             }
           ])
         })
@@ -320,8 +329,9 @@ const FileManager: React.FC<Props> = ({
     handleDelete: () => {
       const files = selectedFiles.map((item) => item.path)
       const handleDeleteSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         deleteItems(files)
           .then(() => {
@@ -335,12 +345,12 @@ const FileManager: React.FC<Props> = ({
               }
             ])
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while removing`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
@@ -359,8 +369,9 @@ const FileManager: React.FC<Props> = ({
       const path = selectedFolder
 
       const handleEmptySubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
 
         emptydir(path)
@@ -375,12 +386,12 @@ const FileManager: React.FC<Props> = ({
               }
             ])
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while empty folder`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
@@ -401,19 +412,20 @@ const FileManager: React.FC<Props> = ({
         fileName = value
       }
       const handleNewFileSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         createNewFile(selectedFolder, fileName)
           .then(() => {
             operations.handleReload()
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while creating file`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
@@ -440,28 +452,28 @@ const FileManager: React.FC<Props> = ({
         folderName = value
       }
       const handleNewFolderSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         createNewFolder(selectedFolder, folderName)
           .then(() => {
             operations.handleReload()
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while creating folder`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
       }
 
       handleClickPopupOpen({
-        title: `Creating new folder`,
-        description:
-          'Dont use spaces, localised symbols or emojies. This can affect problems',
+        title: `新建文件夹`,
+        description: "不要使用'<>/\\|:\"*?.'等特殊字符",
         handleClose: handleClose,
         handleSubmit: handleNewFolderSubmit,
         nameInputSets: {
@@ -480,27 +492,29 @@ const FileManager: React.FC<Props> = ({
         renameTxt = value
       }
       const handleRenameSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         renameFiles(item.path, renameTxt)
           .then(() => {
             unsetSelectedFiles()
             operations.handleReload()
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while rename`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
       }
 
       handleClickPopupOpen({
-        title: `Renaming of ${item.name}`,
+        title: `重命名 ${item.name}`,
+        description: '',
         handleClose: handleClose,
         handleSubmit: handleRenameSubmit,
         nameInputSets: {
@@ -536,12 +550,12 @@ const FileManager: React.FC<Props> = ({
           unsetSelectedFiles()
           operations.handleReload()
         })
-        .catch((error: any) => {
+        .catch((error: AxiosError) => {
           setMessages([
             {
               title: `Error happened while duplicate`,
               type: 'error',
-              message: error.message
+              message: error.message || ''
             }
           ])
         })
@@ -555,29 +569,30 @@ const FileManager: React.FC<Props> = ({
         name = value
       }
       const handleArchiveSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         archive(files, destination, name)
           .then(() => {
             operations.handleReload()
             unsetSelectedFiles()
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while creating archive`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
       }
 
       handleClickPopupOpen({
-        title: `Creating new archive`,
+        title: `创建压缩文件`,
         description:
-          'Create a new archive with all selected files. If there is already file with this name it will replace',
+          '创建一个包含所有选定文件的压缩包。如果已存在同名文件，将进行替换。',
         handleClose: handleClose,
         handleSubmit: handleArchiveSubmit,
         nameInputSets: {
@@ -592,29 +607,30 @@ const FileManager: React.FC<Props> = ({
       const file = selectedFiles[0].path
       const destination = selectedFolder
       const handleArchiveSubmit = () => {
-        setPopup({
-          open: false
+        setPopup((state) => {
+          state.open = false
+          return state
         })
         unzip(file, destination)
           .then(() => {
             operations.handleReload()
             unsetSelectedFiles()
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while extraction archive`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
       }
 
       handleClickPopupOpen({
-        title: `Extract all files from archive to ${destination}`,
+        title: `解压缩 ${destination}`,
         description:
-          'All files will extracted. If they are existed in folder alreadt they will replaced.',
+          '解压到当前文件夹。 如果它们已经存在于文件夹中，它们将被替换。 ',
         handleClose: handleClose,
         handleSubmit: handleArchiveSubmit,
         nameInputSets: {}
@@ -625,9 +641,10 @@ const FileManager: React.FC<Props> = ({
       const file = selectedFiles[0]
       unsetSelectedFiles()
       handleClickPopupOpen({
-        title: `File: ${file.name}`,
+        title: `图片: ${file.name}`,
         description: `<img src="${mainconfig.serverPath}${file.path}" />`,
         handleClose: handleClose,
+        handleSubmit: null,
         nameInputSets: {}
       })
     },
@@ -663,9 +680,10 @@ const FileManager: React.FC<Props> = ({
                 }
             `
       handleClickPopupOpen({
-        title: `File: ${file.name}`,
+        title: `文件: ${file.name}`,
         description,
         handleClose: handleClose,
+        handleSubmit: null,
         nameInputSets: {}
       })
     },
@@ -718,16 +736,16 @@ const FileManager: React.FC<Props> = ({
                   }
                 ])
               })
-              .catch((error: any) => {
-                // console.log(error:any)
+              .catch((error: AxiosError) => {
+                console.log(error)
               })
           })
-          .catch((error: any) => {
+          .catch((error: AxiosError) => {
             setMessages([
               {
                 title: `Error happened while saving image`,
                 type: 'error',
-                message: error.message
+                message: error.message || ''
               }
             ])
           })
@@ -1086,7 +1104,7 @@ const FileManager: React.FC<Props> = ({
       {/* 设置paper边框 */}
       <Paper>
         {/* 通用对话框  ...popupData解构对象*/}
-        {popupData.open && <PopupDialog {...popupData} />}
+        {popupData.open && <PopupDialog {...popupData.popup} />}
         {/* 图像编辑 */}
         {editImage.open && <ImageEditor {...editImage} />}
         <TopBar buttons={aviableButtons} />
