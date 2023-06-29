@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 主显区域的dialog、message、右键菜单、文件操作区域集成
+ * @createDate 2023-01-23 18:26:21
+ */
+
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Menu, MenuItem, Divider, Box } from '@material-ui/core'
@@ -20,10 +26,14 @@ const contextMenuInital: ContextMenuInitial = {
 }
 
 type Props = {
+  // 提示信息配置
   messages: Messages[]
+  // 所有操作的大集合
   operations: Operations
   isloading: boolean
+  // 上传文件开关
   uploadBox: boolean
+  // 右键菜单按钮回调
   buttons: AviableButtons
   selectedFolder: string
 }
@@ -36,16 +46,12 @@ const ContainerBar: React.FC<Props> = ({
   uploadBox,
   buttons
 }) => {
-  // messages：提示信息配置
-  // operations：所有操作的大集合
-  // isloading：加载中
-  // buttons：右键菜单
   const classes = useStyles()
   // item上的右键菜单信息
   const [itemContext, itemContexSet] = useState(contextMenuInital)
   // 空白区域的右键菜单信息
   const [contentContex, contentContexSet] = useState(contextMenuInital)
-  // 选择取消选择 value：文件对象
+  // 选择、取消选择
   const handleAddSelected = (item: Item) => {
     operations.handleAddSelected(item)
   }
@@ -89,7 +95,7 @@ const ContainerBar: React.FC<Props> = ({
 
   return (
     <Box className={classes.root}>
-      {/* 消息提示窗体 多条提示消息就一条条显示 目前来看还是有些小问题todo  */}
+      {/* 消息提示窗体 多条提示消息就一条条显示 有些小问题 todo */}
       <div className={classes.messagesBox}>
         {messages.map(
           (alert: Messages, index: React.Key | null | undefined) => (
@@ -111,7 +117,6 @@ const ContainerBar: React.FC<Props> = ({
           handleCancel={operations.handleUpload}
         />
       )}
-      {/* onContextMenu:空白区域右键单击菜单 */}
       <div
         className={classes.container}
         onContextMenu={handleContentContextClick}

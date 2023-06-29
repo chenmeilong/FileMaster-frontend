@@ -1,6 +1,11 @@
+/**
+ * @author MilesChen
+ * @description 文件上传窗口 拖放实现文件上传
+ * @createDate 2023-02-13 20:37:09
+ */
+
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-// 上传文件与拖放
 import { useDropzone } from 'react-dropzone'
 import { uploadFile } from '@/Redux/actions'
 import { makeStyles } from '@material-ui/core/styles'
@@ -54,17 +59,19 @@ const useStyles = makeStyles(() => ({
 
 // 上传文件下方的按钮组件
 type Props = {
+  // 当前路径
   currentFolder: string
+  // 重载当前目录文件和文件夹树
   handleReload: () => void
+  // 文件上传回调
   uploadFile: any
+  // 取消上传事件
   handleCancel: () => void
 }
 
 interface FileWithPreview extends File {
   preview: string
 }
-
-// handleCancel 取消上传事件
 const UploadFiles: React.FC<Props> = ({
   currentFolder,
   handleReload,
@@ -76,9 +83,8 @@ const UploadFiles: React.FC<Props> = ({
   // 存放当前选择的文件对象 blob 但是里面新增了个属性 preview
   //
   const [files, setFiles] = useState<FileWithPreview[]>([])
-
   const { getRootProps, getInputProps } = useDropzone({
-    // 只接收图片文件
+    // 只接收指定类型文件
     accept: { 'image/*': ['.png', '.gif', '.jpeg', '.jpg'] },
     // 当用户拖放或选择文件时触发此回调函数
     onDrop: (acceptedFiles) => {
@@ -114,7 +120,7 @@ const UploadFiles: React.FC<Props> = ({
     const formData = new FormData()
     formData.append('path', currentFolder)
     files.map((file) => {
-      // 如何第二个参数是文件对象，则有第三个可选参数为文件名
+      // 如果第二个参数是文件对象，则有第三个可选参数为文件名
       formData.append('files', file, file.name)
     })
 
@@ -132,7 +138,7 @@ const UploadFiles: React.FC<Props> = ({
     {
       name: 'submit',
       icon: 'icon-save',
-      label: 'Upload Files To Server',
+      label: '上传',
       class: 'green',
       onClick: handleSubmitUpload,
       disabled: !(files.length > 0)
@@ -140,7 +146,7 @@ const UploadFiles: React.FC<Props> = ({
     {
       name: 'submit',
       icon: 'icon-ban',
-      label: 'Cancel',
+      label: '返回',
       type: 'link',
       onClick: handleCancelUpload
     }
@@ -158,7 +164,7 @@ const UploadFiles: React.FC<Props> = ({
     <section className={classes.container}>
       <div {...getRootProps({ className: 'dropzone' })}>
         <input {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
+        <p>在这里拖放一些文件，或者单击以选择文件</p>
       </div>
       <ul className={classes.acceptedFiles}>{acceptedFiles}</ul>
       <ButtonList buttons={buttons} />

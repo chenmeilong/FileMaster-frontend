@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description filemanager action
+ * @createDate 2023-01-26 10:45:33
+ */
+
 import { Item } from '@/types'
 import { LocalActionTypes } from '../store/types'
 
@@ -33,21 +39,21 @@ export const RUN_SORTING_FILTER = 'RUN_SORTING_FILTER'
 export const SET_IMAGE_SETTINGS = 'SET_IMAGE_SETTINGS'
 export const UPLOAD_FILES = 'UPLOAD_FILES'
 
-//  todo 是否每个都添加 LocalActionTypes
+//  todo 因为使用中间件，实际的返回值可能不是这里的返回值，需要更加精准的类型定义
 export function setSelectedFiles(item: Item): LocalActionTypes {
   return {
     item,
     type: SET_SELECTED_FILES
   }
 }
-// 修改itemView的值修改为list还是grid
+// 修改布局方式
 export function listViewChange(view: string) {
   return {
     view,
     type: SET_ITEM_VIEW
   }
 }
-
+// 修改排序方式
 export function setSorting(orderBy: string, field: string) {
   return {
     orderBy,
@@ -55,13 +61,13 @@ export function setSorting(orderBy: string, field: string) {
     type: SET_SORT_ORDER_BY
   }
 }
-
+// 文件与文件夹排序
 export function filterSorting() {
   return {
     type: RUN_SORTING_FILTER
   }
 }
-
+// 修改图标显示方式
 export function setImagesSettings(imagePreview: string) {
   return {
     imagePreview,
@@ -74,37 +80,37 @@ export function unsetSelectedFiles() {
     type: UNSET_SELECTED_FILES
   }
 }
-
+// 全选
 export function selectAllFiles() {
   return {
     type: SELECT_ALL_FILES
   }
 }
-
+// 反选
 export function inverseSelectedFiles() {
   return {
     type: INVERSE_SELECTED_FILES
   }
 }
-
+// 复制
 export function copyToBufferFiles() {
   return {
     type: COPY_FILES_TOBUFFER
   }
 }
-
+// 剪切
 export function cutToBufferFiles() {
   return {
     type: CUT_FILES_TOBUFFER
   }
 }
-
+// 清空剪切板
 export function clearBufferFiles() {
   return {
     type: CLEAR_FILES_TOBUFFER
   }
 }
-// 修改当前选择的文件夹和history访问记录
+// 修改当前选择的文件夹，history是否添加到访问记录
 export function setSelectedFolder(path: string, history: boolean) {
   return {
     type: SET_SELECTED_FOLDER,
@@ -126,7 +132,7 @@ export function getFilesList(path: string) {
     }
   }
 }
-
+// 获取根目录下的文件夹树
 export function getFoldersList() {
   return {
     type: GET_FOLDERS_LIST,
@@ -136,14 +142,14 @@ export function getFoldersList() {
     }
   }
 }
-// 修改history的index
+// 修改访问记录
 export function setHistoryIndex(index: number) {
   return {
     type: SET_HISTORY_INDEX,
     index
   }
 }
-
+// 文件夹或文件夹重命名
 export function renameFiles(path: string, newname: string) {
   return {
     type: RENAME_FILE,
@@ -157,7 +163,7 @@ export function renameFiles(path: string, newname: string) {
     }
   }
 }
-
+// 新建文件
 export function createNewFile(path: string, file: string) {
   return {
     type: CREATE_FILE,
@@ -171,7 +177,7 @@ export function createNewFile(path: string, file: string) {
     }
   }
 }
-
+// 新建文件夹
 export function createNewFolder(path: string, folder: string) {
   return {
     type: CREATE_FOLDER,
@@ -185,9 +191,14 @@ export function createNewFolder(path: string, folder: string) {
     }
   }
 }
-// items由文件路径组成的数组
-// type 是cut or copy
-// 当前操作路径
+
+/**
+ * 粘贴
+ * @param items 由文件路径组成的数组
+ * @param type cut or copy
+ * @param destination 当前操作路径
+ * @return request_obj
+ */
 export function pasteFiles(items: string[], type: string, destination: string) {
   return {
     type: PASTE_FILES,
@@ -201,7 +212,7 @@ export function pasteFiles(items: string[], type: string, destination: string) {
     }
   }
 }
-
+// 清空指定路径所有内容
 export function emptydir(path: string) {
   return {
     type: EMPTY_DIR,
@@ -227,7 +238,7 @@ export function deleteItems(items: string[]) {
     }
   }
 }
-
+// 快速复制
 export function dublicateItem(path: string) {
   return {
     type: DUPLICATE_ITEM,
@@ -240,7 +251,7 @@ export function dublicateItem(path: string) {
     }
   }
 }
-
+// 解压
 export function unzip(file: string, destination: string) {
   return {
     type: UNZIP_FILE,
@@ -254,7 +265,7 @@ export function unzip(file: string, destination: string) {
     }
   }
 }
-
+// 将files中的文件或者文件夹添加到name压缩包存放在destination
 export function archive(files: string[], destination: string, name: string) {
   return {
     type: ARCHIVE_FILES,
@@ -269,7 +280,14 @@ export function archive(files: string[], destination: string, name: string) {
     }
   }
 }
-// 提交修改后的图片保存下来 todo  file是一个超级长的字符串
+
+/**
+ * 编辑图片时保存图片
+ * @param file 字符串形式的图片
+ * @param path 保存路径
+ * @param isnew 是否另存为
+ * @return request_obj
+ */
 export function saveimage(file: string, path: string, isnew: boolean) {
   return {
     type: SAVE_IMAGE,
@@ -284,7 +302,7 @@ export function saveimage(file: string, path: string, isnew: boolean) {
     }
   }
 }
-// body{path:string;files:二进制文件}
+// 上传文件 body {path:string;files:二进制文件}
 export function uploadFile(body: FormData) {
   return {
     type: UPLOAD_FILES,

@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description redux type definition
+ * @createDate 2023-06-25 22:37:52
+ */
+
 import { Item } from '@/types'
 import {
   SET_SELECTED_FILES,
@@ -32,6 +38,7 @@ export interface Request {
   url: string
 }
 
+// 本地操作action
 export type LocalActionTypes =
   | { type: typeof SET_SELECTED_FILES; item: Item }
   | { type: typeof SET_ITEM_VIEW; view: string }
@@ -48,6 +55,7 @@ export type LocalActionTypes =
   | { type: typeof SET_HISTORY_INDEX; index: number }
 
 // todo 给每个请求的API返回的内容添加类型定义
+// 走中间件axios请求的action
 export type APIActionTypes =
   | {
       type: typeof GET_FILES_LIST
@@ -97,5 +105,5 @@ export type APIActionTypes =
       type: typeof UPLOAD_FILES
       data: object
     }
-
+// 所有的action请求type
 export type ActionTypes = LocalActionTypes | APIActionTypes

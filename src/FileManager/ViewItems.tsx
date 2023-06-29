@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 文件夹内容显示组件
+ * @createDate 2023-01-30 17:34:04
+ */
+
 import React from 'react'
 import { connect } from 'react-redux'
 import {
@@ -28,11 +34,13 @@ type ItemProps = {
 }
 
 type Props = {
+  // 选择反选
   addSelect: (item: Item) => void
   bufferedItems: BufferedItems
   doubleClick: (value: string, history?: boolean) => void
   filesList: Item[]
   itemsView: 'list' | 'grid'
+  // 右键点击事件 todo 与浏览器右边冲突
   onContextMenuClick: (event: {
     stopPropagation: () => void
     preventDefault: () => void
@@ -53,7 +61,6 @@ const ViewItems: React.FC<Props> = ({
   selectedFiles,
   showImages
 }) => {
-  // onContextMenuClick：右键菜单 addSelect：选择反选 其他三个都是store上的属性
   const classes = useStyles()
   // 获取图标，小图标
   const getThumb = (item: Item) => {
@@ -76,7 +83,7 @@ const ViewItems: React.FC<Props> = ({
         }
       }
     } catch (error) {
-      // 没找到对应的下图标显示搜索图标
+      // 没找到则显示搜索图标
       return config.icons.broken
     }
   }
@@ -133,8 +140,8 @@ const ViewItems: React.FC<Props> = ({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            {/* true保护状态 不可拖动且会显示一把锁 且可选 */}
-            {/* false非保护状态 可拖动，正常选择 */}
+            {/* true 保护状态 不可拖动且会显示一把锁 且不可选 */}
+            {/* false 非保护状态 可拖动，正常选择 */}
             {(item.private && (
               <span className={`icon-lock ${classes.locked}`} />
             )) || (
@@ -240,12 +247,11 @@ const ViewItems: React.FC<Props> = ({
   }
   // list文件夹渲染
   const ListFolderItem: React.FC<ItemProps> = ({ item, index }) => {
-    // 实现剪切变透明，todo
+    // todo 实现剪切变透明
     const fileCuted = isCuted(item)
     const isSelected = checkIsSelected(item)
 
     return (
-      // 固定写法
       <Draggable index={index} draggableId={item.id}>
         {(provided) => (
           <TableRow
@@ -267,7 +273,6 @@ const ViewItems: React.FC<Props> = ({
               type="CONTAINERITEM"
               isCombineEnabled
             >
-              {/* 用于获取拖动对象，因为要拖动时候实现图标转换，目前有些问题 todo 这里应该想文件一样不用嵌套这层内容*/}
               {(provided, snapshot) => (
                 <>
                   <TableCell className={classes.tableCell}>
@@ -311,7 +316,7 @@ const ViewItems: React.FC<Props> = ({
       </Draggable>
     )
   }
-  // list文件渲染
+  // list布局文件渲染
   const ListFileItem: React.FC<ItemProps> = ({ item, index }) => {
     const fileCuted = isCuted(item)
     const isSelected = checkIsSelected(item)
@@ -358,6 +363,7 @@ const ViewItems: React.FC<Props> = ({
     )
   }
 
+  // List布局
   const ListView = () => {
     return (
       // TableContainer component={Box} 这样组合在一起为便于写css
@@ -371,16 +377,15 @@ const ViewItems: React.FC<Props> = ({
             <TableRow className={classes.tableHead}>
               <TableCell style={{ width: '20px' }}></TableCell>
               <TableCell style={{ width: '35px' }} align="left"></TableCell>
-              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">名称</TableCell>
               <TableCell style={{ width: '100px' }} align="left">
-                Size
+                大小
               </TableCell>
               <TableCell style={{ width: '150px' }} align="left">
-                Created
+                创建时间
               </TableCell>
             </TableRow>
           </TableHead>
-          {/* Droppable Draggable、ref={provided.innerRef} {...provided.droppableProps}这是固定写法 */}
           <Droppable
             droppableId="listDroppablContainer"
             type="CONTAINERITEM"
@@ -411,6 +416,7 @@ const ViewItems: React.FC<Props> = ({
     )
   }
 
+  // Grid布局
   const GridView = () => {
     return (
       <div>
@@ -435,7 +441,6 @@ const ViewItems: React.FC<Props> = ({
                     <FileItem key={index} index={index} item={item} />
                   )
               )}
-
               {provided.placeholder}
             </div>
           )}

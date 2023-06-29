@@ -1,5 +1,12 @@
+/**
+ * @author MilesChen
+ * @description fileManager type definition
+ * @createDate 2023-06-26 13:55:18
+ */
+
 import { Item } from '@/types'
 
+// fileManager回调函数
 export interface Operations {
   handleAddSelected: (item: Item) => void
   handleUnsetSelected: () => void
@@ -63,7 +70,7 @@ export interface ButtonType {
   icon: string
   disable?: boolean
 
-  // 这个多种多样 先用any代替
+  // todo 这个多种多样 先用any代替
   onClick: any
 }
 

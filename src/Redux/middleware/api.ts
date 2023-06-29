@@ -1,6 +1,20 @@
+/**
+ * @author MilesChen
+ * @description request API
+ * @createDate 2023-01-25 20:14:34
+ */
+
 import axios from 'axios'
 import { Middleware } from 'redux'
 
+/**
+ * 自定义中间件实现了action分发，如果不是request请求就通过中间到reducer
+ * 如果是request请求则调用两次reducer
+ * 1.通过中间到reducer
+ * 2.发起axios获取数据，成功或失败通过中间件到reducer
+ * @param apiUrl 请求根地址
+ * @return dispatch | Promise dispatch内容或者axios的请求对象
+ */
 const apiMiddleware =
   (apiUrl: string): Middleware =>
   () =>
@@ -22,12 +36,14 @@ const apiMiddleware =
       SUCCESS = action.type
       FAILURE = `${action.type}_FAILURE`
     }
-    // 这次的next用于 loading 使程序不至于卡死 告诉reduces正在请求中，但是这里可以将这行去掉
+    // next 可用于 loading 使程序不至于卡死 告诉reduces正在请求中
     next({ type: REQUEST })
     const ContentType =
       action.type === 'UPLOAD_FILES'
         ? 'multipart/form-data'
         : 'application/json'
+
+    // todo 使用async、await的方式重构axios请求API
     return axios({
       method: action.request.method,
       headers: {

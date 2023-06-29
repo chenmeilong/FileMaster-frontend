@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description message 消息提示组件
+ * @createDate 2023-02-07 10:23:15
+ */
+
 import React, { useEffect, useRef } from 'react'
 import Alert from '@material-ui/lab/Alert'
 import AlertTitle from '@material-ui/lab/AlertTitle'
@@ -39,13 +45,12 @@ type Props = {
   alert: Messages
 }
 
-// 包含title、type、message、timer
 const InfoBoxes: React.FC<Props> = ({ alert }) => {
   const [open, setOpen] = React.useState(true)
   const prevAlert = usePrevious(alert)
   const classes = useStyles()
   const timerRef = useRef<number>()
-
+  // todo 自动关闭目前有bug
   useEffect(() => {
     if (prevAlert !== alert) {
       setOpen(true)

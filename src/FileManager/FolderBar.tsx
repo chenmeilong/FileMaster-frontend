@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 侧边菜单折叠栏
+ * @createDate 2023-01-20 16:23:24
+ */
+
 import React, { useState } from 'react'
 import { ListItem, List } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -6,7 +12,9 @@ import { Item } from '@/types'
 
 type Props = {
   foldersList: Item
+  // 跳转到指定路径
   onFolderClick: (value: string, history?: boolean) => void
+  // 当前选择的文件夹
   selectedFolder: string
 }
 
@@ -113,23 +121,29 @@ const MenuSubmenu: React.FC<MenuSubmenuProps> = ({
 }
 
 type MenuItemProps = {
+  // 根目录下的所有文件夹(因为递归调用，这里的根目录是相对的)
   item: Item
+  // 当前选择的目录，
   currentUrl: string
+  // 点击文件夹的回调函数，跳转到指定路径
   onFolderClick: (value: string, history?: boolean) => void
+  // 父亲级目录
   parentItem?: Item
 }
+
+// 递归实现 文件夹分层管理
 const MenuItem: React.FC<MenuItemProps> = ({
   item,
   currentUrl,
   onFolderClick
 }) => {
   const asideLeftLIRef = React.useRef<HTMLLIElement | null>(null)
-  // item:根目录下的所有文件夹(这里的根目录是相对的，用到了递归)，
-  // currentUrl：当前选择的目录，onFolderClick：点击文件夹的回调函数
-  const [expand, setExpand] = useState(false) //当前目录是否已激活
+  // 开关当前目录
+  const [expand, setExpand] = useState(false)
   const mouseClick = () => {
     onFolderClick(item.path)
   }
+  // 开关当前目录的回调
   const handleExpand = () => {
     setExpand(!expand)
   }
@@ -140,7 +154,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
 
   // 检查当前文件夹是否激活，用于设置打开关闭文件夹ico
   const isActive = isMenuItemIsActive(item)
-
   return (
     <ListItem
       ref={asideLeftLIRef}

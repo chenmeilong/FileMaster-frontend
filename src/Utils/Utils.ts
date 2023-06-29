@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 工具函数库
+ * @createDate 2023-01-29 18:43:27
+ */
+
 // 日期格式转换
 export const convertDate = (dateString: string): string => {
   const mydate = new Date(dateString)
@@ -6,7 +12,7 @@ export const convertDate = (dateString: string): string => {
   )}`
 }
 
-// 文件大小计算，能够自适应单位和大小在1-1000以内
+// 文件大小计算，能够自适应单位和大小在0-1000以内
 export const formatBytes = (
   bytes: number | undefined,
   decimals = 2

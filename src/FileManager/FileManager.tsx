@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 集成所有 FileManager 组件
+ * @createDate 2023-01-15 17:13:28
+ */
+
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import {
@@ -89,10 +95,20 @@ const editImageInital: EditImage = {
   path: '',
   extension: ''
 }
+const popupDataInital: { open: boolean; popup: Popup } = {
+  open: false,
+  popup: {
+    title: '',
+    description: '',
+    handleClose: null,
+    handleSubmit: null,
+    nameInputSets: {}
+  }
+}
 
 type Props = {
   height: string
-  selectCallback: (filePath: string) => void
+  debugCallBack: (filePath: string) => void
 
   selectedFiles: Item[]
   selectedFolder: string
@@ -129,7 +145,7 @@ type Props = {
 
 const FileManager: React.FC<Props> = ({
   height,
-  selectCallback,
+  debugCallBack,
 
   selectedFiles,
   selectedFolder,
@@ -167,37 +183,30 @@ const FileManager: React.FC<Props> = ({
   const bigHeight = `${window.innerHeight - 100}px` //622px
   // 提示信息的配置
   const [messagesList, setMessages] = useState(messagesListInital)
-  // isloading是什么样的状态
+  // isloading状态 有白色遮罩层
   const [isloading, setLoading] = React.useState(false)
-  // 通过状态后面控制启动
+  // uploadBox状态 文件上传窗口状态, 通过状态后面控制启动
   const [uploadBox, setuploadBox] = React.useState(false)
+  // 全屏 状态
   const [expand, setExpand] = React.useState(false)
+  // 当前是否选着有文件或者缓存文件
   const selecMessages =
-    selectedFiles.length > 0 || bufferedItems.files.length > 0 // false
-
+    selectedFiles.length > 0 || bufferedItems.files.length > 0
+  // 图片编辑 状态管理
   const [editImage, setEditImage] = React.useState(editImageInital)
-
-  const popupDataInital: { open: boolean; popup: Popup } = {
-    open: false,
-    popup: {
-      title: '',
-      description: '',
-      handleClose: null,
-      handleSubmit: null,
-      nameInputSets: {}
-    }
-  }
-
+  // message 状态管理
   const [popupData, setPopup] = useState(popupDataInital)
 
-  // index需要跳转的位置
-  // historyInfo跳转位置的值
+  /**
+   * 跳转到指定路径
+   * @param historyInfo 跳转位置的值
+   * @param index 需要跳转的位置
+   * @return void
+   */
   const handlingHistory = (historyInfo: Steps, index: number) => {
     setHistoryIndex(index) // 修改store中的history的当前选择的index
     unsetSelectedFiles() // 清除当前选择文件
-    switch (
-      historyInfo.action //明明就只有这一种可能还是添加了switch判断 ,方便以后扩展
-    ) {
+    switch (historyInfo.action) {
       case 'folderChange':
         operations.handleSetMainFolder(historyInfo.path, true)
         break
@@ -212,14 +221,14 @@ const FileManager: React.FC<Props> = ({
       return state
     })
   }
-  // 弹窗
+  // 设置弹窗内容
   const handleClickPopupOpen = (data: Popup) => {
     setPopup({
       popup: data,
       open: true
     })
   }
-
+  // Operations操作大集合
   const operations: Operations = {
     // 文件对象
     handleAddSelected: (item) => {
@@ -257,26 +266,26 @@ const FileManager: React.FC<Props> = ({
       const historyInfo = history.steps[historyIndex]
       handlingHistory(historyInfo, historyIndex)
     },
-    // 复制文件名字到buffer
+    // 复制到buffer
     handleCopy: () => {
       copyToBufferFiles()
       setMessages([
         {
-          title: `File Successfully Copied`,
+          title: `文件复制成功`,
           type: 'info',
-          message: 'You can paste it in any folder',
+          message: '您可以把它粘贴到任何文件夹中',
           timer: 3000
         }
       ])
     },
-    // 剪切文件到buffer
+    // 剪切到buffer
     handleCut: () => {
       cutToBufferFiles()
       setMessages([
         {
-          title: `File Successfully Cut`,
+          title: `文件剪切成功`,
           type: 'info',
-          message: 'You can paste it in any folder',
+          message: '您可以把它粘贴到任何文件夹中',
           timer: 3000
         }
       ])
@@ -290,9 +299,9 @@ const FileManager: React.FC<Props> = ({
           operations.handleReload()
           setMessages([
             {
-              title: `File Successfully Pasted`,
+              title: `文件成功粘贴`,
               type: 'success',
-              message: 'You can paste it in any folder',
+              message: '',
               timer: 3000
             }
           ])
@@ -300,26 +309,29 @@ const FileManager: React.FC<Props> = ({
         .catch((error: AxiosError) => {
           setMessages([
             {
-              title: `Error happened while paste items`,
+              title: `粘贴时发生了错误`,
               type: 'error',
               message: error.message || ''
             }
           ])
         })
     },
-    // 跳转到指定路径
-    // value路径名称,history是否需不包含当前跳转的路径 false包含当前路径  true不包含当前路径
-    // todo可以简化去掉
+
+    /**
+     * 跳转到指定路径
+     * @param value value路径名称
+     * @param history history是否需记录当前跳转的路径 false包含当前路径  true不包含当前路径
+     * @return void
+     */
     handleSetMainFolder: (value, history = false) => {
       unsetSelectedFiles()
       setSelectedFolder(value, history)
       getFilesList(value).then(() => {
-        // 这里的result是api的then后的返回值  有些不理解，这里应该要强行记住或者看源码
         setMessages([
           {
-            title: `File Successfully Loaded`,
+            title: `文件加载成功`,
             type: 'success',
-            message: 'You can paste it in any folder',
+            message: '',
             timer: 3000
           }
         ])
@@ -339,16 +351,16 @@ const FileManager: React.FC<Props> = ({
             operations.handleReload()
             setMessages([
               {
-                title: `Delete files and folders request`,
+                title: `删除文件请求`,
                 type: 'success',
-                message: 'All files and folders successfully deleted'
+                message: '文件已删除'
               }
             ])
           })
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while removing`,
+                title: `删除时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -357,8 +369,8 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `Deleting selected files and folders: ${selectedFiles.length} items `,
-        description: `All selected files and folder will remove without recover`,
+        title: `删除选定的文件和文件夹: ${selectedFiles.length}`,
+        description: `所有选定的文件和文件夹将被删除而无法恢复 `,
         handleClose: handleClose,
         handleSubmit: handleDeleteSubmit,
         nameInputSets: {}
@@ -380,16 +392,16 @@ const FileManager: React.FC<Props> = ({
             operations.handleReload()
             setMessages([
               {
-                title: `Empty folder request`,
+                title: `已成功删除所有文件和文件夹`,
                 type: 'success',
-                message: 'All files and folders successfully removed'
+                message: ''
               }
             ])
           })
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while empty folder`,
+                title: `清空文件夹时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -398,8 +410,8 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `Deleting all files and folders in ${path}`,
-        description: `All files and folder will remove without recover`,
+        title: `删除目录中的所有文件和文件夹: ${path}`,
+        description: `所有文件和文件夹将删除且不可恢复 `,
         handleClose: handleClose,
         handleSubmit: handleEmptySubmit,
         nameInputSets: {}
@@ -423,7 +435,7 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while creating file`,
+                title: `创建文件时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -432,13 +444,12 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `Creating new file`,
-        description:
-          'Only allowed file extensions can be created. Otherwise will be ignored by server.',
+        title: `创建新文件`,
+        description: '只能创建允许的文件扩展名,否则将被服务器忽略.',
         handleClose: handleClose,
         handleSubmit: handleNewFileSubmit,
         nameInputSets: {
-          label: 'File Name',
+          label: '文件名',
           value: fileName,
           callBack: handleNewFileChange
         }
@@ -463,7 +474,7 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while creating folder`,
+                title: `创建文件夹时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -477,7 +488,7 @@ const FileManager: React.FC<Props> = ({
         handleClose: handleClose,
         handleSubmit: handleNewFolderSubmit,
         nameInputSets: {
-          label: 'Folder Name',
+          label: '文件夹名',
           value: folderName,
           callBack: handleNewFolderChange
         }
@@ -504,21 +515,21 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while rename`,
+                title: `重命名时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
             ])
           })
       }
-
+      // ?????
       handleClickPopupOpen({
         title: `重命名 ${item.name}`,
         description: '',
         handleClose: handleClose,
         handleSubmit: handleRenameSubmit,
         nameInputSets: {
-          label: 'Folder Name',
+          label: '文件名称',
           value: renameTxt,
           callBack: handleRenameChange
         }
@@ -529,7 +540,7 @@ const FileManager: React.FC<Props> = ({
       setLoading(true)
       setMessages([
         {
-          title: `Wait While Reloading`,
+          title: `加载中...`,
           type: 'info',
           message: '',
           progress: true,
@@ -553,7 +564,7 @@ const FileManager: React.FC<Props> = ({
         .catch((error: AxiosError) => {
           setMessages([
             {
-              title: `Error happened while duplicate`,
+              title: `复制时发生错误`,
               type: 'error',
               message: error.message || ''
             }
@@ -581,7 +592,7 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while creating archive`,
+                title: `创建压缩包时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -596,7 +607,7 @@ const FileManager: React.FC<Props> = ({
         handleClose: handleClose,
         handleSubmit: handleArchiveSubmit,
         nameInputSets: {
-          label: 'Archive Name',
+          label: '压缩包名称',
           value: name,
           callBack: handleArchiveChange
         }
@@ -619,7 +630,7 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while extraction archive`,
+                title: `解压时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -689,8 +700,8 @@ const FileManager: React.FC<Props> = ({
     },
     // 预留位置 暂无使用
     handleReturnCallBack: (item) => {
-      if (selectCallback) {
-        selectCallback(item)
+      if (debugCallBack) {
+        debugCallBack(item)
       }
       return true
     },
@@ -729,10 +740,9 @@ const FileManager: React.FC<Props> = ({
               .then(() => {
                 setMessages([
                   {
-                    title: `Image successfully saved`,
+                    title: `图片保存成功`,
                     type: 'info',
-                    message:
-                      'Changes may not be visible because of cache. Please update the page'
+                    message: '由于缓存,可能没及时更新,请更新页面 '
                   }
                 ])
               })
@@ -743,7 +753,7 @@ const FileManager: React.FC<Props> = ({
           .catch((error: AxiosError) => {
             setMessages([
               {
-                title: `Error happened while saving image`,
+                title: `保存图像时发生错误`,
                 type: 'error',
                 message: error.message || ''
               }
@@ -759,7 +769,7 @@ const FileManager: React.FC<Props> = ({
         extension: item.extension || ''
       })
     },
-    // 编辑文本文件 todo
+    // todo 编辑文本文件
     handleEditText: () => {
       console.log('text Edit todo')
     },
@@ -783,7 +793,7 @@ const FileManager: React.FC<Props> = ({
     handleViewChange: (type) => {
       listViewChange(type)
     },
-    // 拖动事件,拖动结束触发，目前还有些问题todo 不稳定容易报错
+    // 拖动事件,拖动结束触发，目前还有些问题 todo
     // result 由拖动模块提供
     handleDragEnd: (result) => {
       setLoading(!isloading)
@@ -800,16 +810,16 @@ const FileManager: React.FC<Props> = ({
             destination = file.path
           }
         })
-        //todo这里添加更多的校检可以解决报错问题,比如文件不能拖入文件内,文件夹不能拖入文件内
+        //todo 这里添加更多的校检可以解决报错问题,比如文件不能拖入文件内,文件夹不能拖入文件内
         if (destination !== undefined && files.length !== 0) {
           pasteFiles(files, 'cut', destination)
             .then(() => {
               operations.handleReload()
               setMessages([
                 {
-                  title: `File Successfully Moved`,
+                  title: `文件移动成功`,
                   type: 'success',
-                  message: 'File that you dragged successfully moved',
+                  message: '您拖动的文件已成功移动',
                   timer: 3000
                 }
               ])
@@ -851,82 +861,82 @@ const FileManager: React.FC<Props> = ({
 
   const allButtons = {
     copy: {
-      title: 'Copy',
+      title: '复制',
       icon: 'icon-copy',
       onClick: operations.handleCopy,
       disable: !(selectedFiles.length > 0)
     },
     cut: {
-      title: 'Cut',
+      title: '剪切',
       icon: 'icon-scissors',
       onClick: operations.handleCut,
       disable: !(selectedFiles.length > 0)
     },
     paste: {
-      title: 'Paste',
+      title: '粘贴',
       icon: 'icon-paste',
       onClick: operations.handlePaste,
       disable: !(bufferedItems.files.length > 0)
     },
     delete: {
-      title: 'Delete',
+      title: '删除',
       icon: 'icon-trash',
       onClick: operations.handleDelete,
       disable: !(selectedFiles.length > 0)
     },
     emptyFolder: {
-      title: 'Empty Folder',
+      title: '清空',
       icon: 'icon-delete-folder',
       onClick: operations.handleEmptyFolder
     },
     rename: {
-      title: 'Rename',
+      title: '重命名',
       icon: 'icon-text',
       onClick: operations.handleRename,
       disable: !(selectedFiles.length === 1)
     },
     newFile: {
-      title: 'Few File',
+      title: '新建文件',
       icon: 'icon-add',
       onClick: operations.handleNewFile
     },
     newFolder: {
-      title: 'New Folder',
+      title: '新建文件夹',
       icon: 'icon-add-folder',
       onClick: operations.handleNewFolder
     },
     goForwad: {
-      title: 'Forwad',
+      title: '前进',
       icon: 'icon-forward',
       onClick: operations.handleGoForWard,
       disable: !(history.currentIndex + 1 < history.steps.length)
     },
     goParent: {
-      title: 'Go to parent folder',
+      title: '根目录',
       icon: 'icon-backward',
       onClick: operations.handleGotoParent,
       disable: selectedFolder === foldersList?.path
     },
     goBack: {
-      title: 'Back',
+      title: '后退',
       icon: 'icon-backward',
       onClick: operations.handleGoBackWard,
       disable: !(history.currentIndex > 0)
     },
     selectAll: {
-      title: 'Select all',
+      title: '全选',
       icon: 'icon-add-3',
       onClick: operations.handleSelectAll,
       disable: !(selectedFiles.length !== filesList.length)
     },
     selectNone: {
-      title: 'Select none',
+      title: '取消',
       icon: 'icon-cursor',
       onClick: operations.handleUnsetSelected,
       disable: selectedFiles.length === 0
     },
     inverseSelected: {
-      title: 'Invert selection',
+      title: '反选',
       icon: 'icon-refresh',
       onClick: operations.handleInverseSelected,
       disable: !(
@@ -935,104 +945,104 @@ const FileManager: React.FC<Props> = ({
     },
     // 预留位置
     selectFile: {
-      title: 'Select file',
+      title: '选择',
       icon: 'icon-outbox',
       onClick: operations.handleReturnCallBack,
-      disable: typeof selectCallback === 'undefined'
+      disable: typeof debugCallBack === 'undefined'
     },
     reload: {
-      title: 'Reload',
+      title: '刷新',
       icon: 'icon-refresh',
       onClick: operations.handleReload
     },
     dubplicate: {
-      title: 'Duplicate',
+      title: '快速复制',
       icon: 'icon-layers',
       onClick: operations.handleDuplicate,
       disable: !(selectedFiles.length === 1)
     },
     // todo
     editFile: {
-      title: 'Edit File',
+      title: '文本编辑',
       icon: 'icon-pencil',
       onClick: operations.handleEditText,
       disable: !(selectedFiles.length === 1 && checkSelectedFileType('text'))
     },
 
     editImage: {
-      title: 'Resize & Rotate',
+      title: '图片编辑',
       icon: 'icon-paint-palette',
       onClick: operations.handleEditImage,
       disable: !(selectedFiles.length === 1 && checkSelectedFileType('image'))
     },
     createZip: {
-      title: 'Create archive',
+      title: '压缩',
       icon: 'icon-zip',
       onClick: operations.handleCreateZip,
       disable: !(selectedFiles.length > 0)
     },
     extractZip: {
-      title: 'Extract files from archive',
+      title: '解压',
       icon: 'icon-zip-1',
       onClick: operations.handleExtractZip,
       disable: !(selectedFiles.length === 1 && checkSelectedFileType('archive'))
     },
     uploadFile: {
-      title: 'Upload Files',
+      title: '上传',
       icon: 'icon-cloud-computing',
       onClick: operations.handleUpload
     },
     // todo
     searchFile: {
-      title: 'Search File',
+      title: '搜索文件',
       icon: 'icon-search'
       // onClick: operations.handleSearchFile
     },
     // todo
     saveFile: {
-      title: 'Save Changes',
+      title: '保存',
       icon: 'icon-save'
       // onClick: operations.handleSaveFileChanges
     },
     preview: {
-      title: 'View',
+      title: '预览',
       icon: 'icon-view',
       onClick: operations.handlePreview,
       disable: !(selectedFiles.length === 1 && checkSelectedFileType('image'))
     },
     getInfo: {
-      title: 'Get Info',
+      title: '详情',
       icon: 'icon-information',
       onClick: operations.handleGetInfo,
       disable: !(selectedFiles.length === 1)
     },
     download: {
-      title: 'Download File',
+      title: '下载',
       icon: 'icon-download-1',
       onClick: operations.handleDownload,
       disable: !(selectedFiles.length === 1 && checkSelectedFileType('file')) //文件才能下载文件夹不能下载
     },
     gridView: {
-      title: 'Grid view',
+      title: '网格布局',
       icon: 'icon-layout-1',
       // 这样写是因为这里不用调用operations.handleViewChange('grid')就直接调用了
       onClick: () => operations.handleViewChange('grid'),
       disable: itemsView === 'grid'
     },
     listView: {
-      title: 'List View',
+      title: '排列布局',
       icon: 'icon-layout-2',
       onClick: () => operations.handleViewChange('list'),
       disable: itemsView === 'list'
     },
     fullScreen: {
-      title: 'Full Screen',
+      title: '全屏',
       icon: expand ? 'icon-minimize' : 'icon-resize',
       onClick: operations.handleFullExpand
     }
   }
-  // 顶部菜单，item右键菜单，空白区域右键菜单
   const aviableButtons = {
+    // 顶部菜单
     topbar: [
       [allButtons.goBack, allButtons.goForwad, allButtons.goParent],
       [
@@ -1060,7 +1070,7 @@ const FileManager: React.FC<Props> = ({
       ],
       [allButtons.gridView, allButtons.listView, allButtons.fullScreen]
     ],
-
+    // item右键菜单
     file: [
       [
         allButtons.copy,
@@ -1078,6 +1088,7 @@ const FileManager: React.FC<Props> = ({
         allButtons.download
       ]
     ],
+    // 空白区域右键菜单
     container: [
       [allButtons.goBack, allButtons.goForwad, allButtons.goParent],
       [
@@ -1091,19 +1102,18 @@ const FileManager: React.FC<Props> = ({
       [allButtons.gridView, allButtons.listView, allButtons.fullScreen]
     ]
   }
-  // render执行完后执行这个，用于初始化只执行一次
+  // 初始化只执行一次
   useEffect(() => {
     getFilesList('')
     getFoldersList().then((result: any) => {
       setSelectedFolder(result.data.path, true)
     })
   }, [getFilesList, getFoldersList, setSelectedFolder])
-
   return (
     <div className={expand ? classes.fmExpanded : classes.fmMinimized}>
       {/* 设置paper边框 */}
       <Paper>
-        {/* 通用对话框  ...popupData解构对象*/}
+        {/* 通用对话框 */}
         {popupData.open && <PopupDialog {...popupData.popup} />}
         {/* 图像编辑 */}
         {editImage.open && <ImageEditor {...editImage} />}
@@ -1139,14 +1149,14 @@ const FileManager: React.FC<Props> = ({
               <Box className={classes.infoMessages}>
                 {selectedFiles.length > 0 && (
                   <div className="text">
-                    <b>{selectedFiles.length}</b> items are selected
+                    <b>{selectedFiles.length}</b> 个目标选择
                   </div>
                 )}
                 {bufferedItems.files.length > 0 && (
                   <div className="text">
                     <b>{bufferedItems.files.length}</b>{' '}
-                    {bufferedItems.type === 'cut' ? 'cuted' : 'copied'} items in
-                    buffer
+                    {bufferedItems.type === 'cut' ? '剪切' : '复制'}{' '}
+                    个文件在缓存
                     <a
                       href="#"
                       onClick={(e) => {
@@ -1154,7 +1164,7 @@ const FileManager: React.FC<Props> = ({
                         clearBufferFiles()
                       }}
                     >
-                      Clear
+                      清除
                     </a>
                   </div>
                 )}

@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description Topbar 按钮组
+ * @createDate 2023-02-03 14:18:45
+ */
+
 import React from 'react'
 import { Tooltip, Button, ButtonGroup } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -18,12 +24,6 @@ const useStyles = makeStyles((theme) => ({
     minWidth: '35px',
     background: '#fff',
     '& span': {}
-  },
-  buttonTitle: {
-    fontSize: '12px',
-    textTransform: 'none',
-    lineHeight: '11px',
-    padding: '0px 5px'
   }
 }))
 
@@ -43,7 +43,6 @@ const ButtonGroupSimple: React.FC<Props> = ({ buttons, index }) => {
       >
         {buttons.map((button, index) => {
           return button.disable ? (
-            // 有图标显示图标。无图标显示文字
             <Button
               key={index}
               className={classes.button}
@@ -61,7 +60,6 @@ const ButtonGroupSimple: React.FC<Props> = ({ buttons, index }) => {
                 aria-haspopup="true"
               >
                 {button.icon && <span className={`${button.icon}`}></span>}
-                {/* <span className={classes.buttonTitle}>{button.title}</span> */}
               </Button>
             </Tooltip>
           )

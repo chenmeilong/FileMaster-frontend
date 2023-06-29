@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description Topbar操作栏
+ * @createDate 2023-01-18 13:06:34
+ */
+
 import React from 'react'
 import { connect } from 'react-redux'
 import { setSorting, filterSorting, setImagesSettings } from '../Redux/actions'
@@ -43,9 +49,12 @@ import { AviableButtons, ButtonType } from './types'
 
 type Props = {
   buttons: AviableButtons
+  // 文件内容排序
   filterSorting: () => void
   orderFiles: Order
+  // 更改图标显示方式
   setImagesSettings: (imagePreview: string) => object
+  // 更改排序方式
   setSorting: (orderBy: string, field: string) => void
   showImages: string
 }
@@ -81,12 +90,12 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
     // 定位到当前按钮附件
     setAnchorEl(event.currentTarget)
   }
-  // 文件排序 升序或降序（todo可以性能优化）
+  // 文件排序 升序或降序
   const handleSetOrderBy = (orderBy: string) => {
     setSorting(orderBy, orderFiles.field)
     filterSorting()
   }
-  // 文件排序方式修改 名字、大小、日期
+  // 文件排序方式  名字、大小、日期
   const handleSetOrderField = (field: string) => {
     setSorting(orderFiles.orderBy, field)
     // 给 store中的filesList 排序
@@ -97,36 +106,36 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
     setAnchorEl(null)
     setOpen({ sorting: false, search: false, settings: false })
   }
-  // 改变图片显示方式 是小原图还是图标  就修改了store中的内容
+  // 改变图片显示方式 缩略图 or 图标
   const handleSetSettings = (imagePreview: string) => {
     setImagesSettings(imagePreview)
   }
 
   const options = [
     {
-      name: 'By Name',
+      name: '名称',
       value: 'name'
     },
     {
-      name: 'By Size',
+      name: '大小',
       value: 'size'
     },
     {
-      name: 'By Create Date',
+      name: '创建时间',
       value: 'date'
     }
   ]
   // 排序与设置
   const additionalButtons: ButtonType[] = [
     {
-      title: 'Sorting',
+      title: '排序',
       icon: 'icon-settings',
       onClick: (e: { currentTarget: React.SetStateAction<null> }) =>
         handleOpenMenu(e, 'sorting'),
       disable: false
     },
     {
-      title: 'Settings',
+      title: '设置',
       icon: 'icon-settings-1',
       onClick: (e: { currentTarget: React.SetStateAction<null> }) =>
         handleOpenMenu(e, 'settings'),
@@ -138,11 +147,11 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
     <Grid container className={classes.container}>
       {buttons.topbar.map((groups, index) => (
         <Grid item key={index}>
-          {/* TopBar上的小区域 */}
+          {/* TopBar上的操作按钮 */}
           <TopBarButtonGroups buttons={groups} index={index} />
         </Grid>
       ))}
-
+      {/* 排序与设置 */}
       <Grid style={{ marginLeft: 'auto' }}>
         <TopBarButtonGroups buttons={additionalButtons} index={0} />
         <Menu
@@ -187,7 +196,7 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
                   value="asc"
                 />
               }
-              label="Ascending"
+              label="升序"
             />
           </MenuItem>
           <MenuItem
@@ -203,7 +212,7 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
                   value="desc"
                 />
               }
-              label="Descending"
+              label="降序"
             />
           </MenuItem>
         </Menu>
@@ -233,7 +242,7 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
                   value="thumbs"
                 />
               }
-              label="Show Thumbs"
+              label="缩略图"
             />
           </MenuItem>
           <MenuItem
@@ -251,7 +260,7 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
                   value="icons"
                 />
               }
-              label="Show Icons"
+              label="图标"
             />
           </MenuItem>
         </Menu>

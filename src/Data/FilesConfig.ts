@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 文件配置
+ * @createDate 2023-02-15 14:37:26
+ */
+
 interface Icons {
   '.png': string
   '.jpg': string

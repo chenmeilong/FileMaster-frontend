@@ -1,4 +1,10 @@
-import React, { useState, forwardRef, Ref } from 'react'
+/**
+ * @author MilesChen
+ * @description dialog会话框
+ * @createDate 2023-02-05 10:23:15
+ */
+
+import React, { useState, forwardRef, Ref, ChangeEvent } from 'react'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -7,11 +13,10 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Zoom from '@material-ui/core/Zoom'
 import { ZoomProps } from '@material-ui/core/Zoom'
-import InputField from './InputField'
 import useStyles from './Styles'
 import { Popup } from '../types'
-
-// 打开从小到大的动画效果
+import { TextField } from '@material-ui/core'
+// 打开dialog 从小到大的动画效果
 const Transition: any = forwardRef(function Transition(
   props: ZoomProps,
   ref: Ref<unknown>
@@ -19,30 +24,21 @@ const Transition: any = forwardRef(function Transition(
   return <Zoom in={true} ref={ref} {...props} />
 })
 
-// export interface Props {
-//   title: string
-//   description: string
-//   handleClose: () => void
-//   handleSubmit: () => void
-//   nameInputSets: {
-//     label: string
-//     value: string
-//     callBack: (value: string) => void
-//   }
-// }
-
 const AlertDialogSlide: React.FC<Popup> = ({
   title,
   description,
   handleClose,
   handleSubmit,
+  // 名称输入配置
   nameInputSets
 }) => {
   const classes = useStyles()
   const nameValue =
     typeof nameInputSets.value !== undefined ? nameInputSets.value : ''
+  // 文件名 状态 使用useState实现数据双向绑定
   const [renameText, setRenameText] = useState(nameValue)
-  const handleNameChange = (value: string) => {
+  const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
     setRenameText(value)
     nameInputSets.callBack && nameInputSets.callBack(value)
   }
@@ -66,10 +62,12 @@ const AlertDialogSlide: React.FC<Popup> = ({
           </DialogContentText>
           {nameInputSets.value && (
             <div className="form-group">
-              <InputField
+              <TextField
+                fullWidth
+                margin="none"
+                onChange={handleNameChange}
                 type="text"
                 label={nameInputSets.label}
-                change={handleNameChange}
                 value={renameText}
                 variant="outlined"
               />

@@ -1,9 +1,14 @@
+/**
+ * @author MilesChen
+ * @description 图片编辑按钮组 todo 与 ButtonGroupSimple.tsx文件合并为一个组件
+ * @createDate 2023-02-13 20:37:09
+ */
+
 import React from 'react'
 import Icon from '@material-ui/core/Icon'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
 
-// todo 修复any 让点击事件的回调函数，添加类型定义
 type Props = {
   buttons: {
     name: string

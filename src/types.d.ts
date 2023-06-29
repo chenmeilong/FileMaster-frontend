@@ -1,7 +1,12 @@
-import { AxiosError } from 'axios'
-import { string } from 'prop-types'
+/**
+ * @author MilesChen
+ * @description global type definition
+ * @createDate 2023-06-25 14:23:04
+ */
 
-// 表示文件或文件夹的基本信息
+import { AxiosError } from 'axios'
+
+// 文件或文件夹详细信息
 export interface Item {
   path: string
   name: string
@@ -19,21 +24,22 @@ export interface Item {
   children?: Item[]
   private?: boolean
 }
-
+// 排序
 export type Order = {
   field: 'name' | 'size' | 'date'
   orderBy: 'asc' | 'desc'
 }
-
+// 路径跳转
 export interface Steps {
   action: string
   path: string
 }
-
+// 剪切板缓存
 export interface BufferedItems {
   type: string
   files: Item[]
 }
+// 浏览路径记录缓存
 export interface History {
   currentIndex: number
   steps: Steps[]

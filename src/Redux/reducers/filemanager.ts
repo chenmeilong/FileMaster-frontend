@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description filemanager reducer
+ * @createDate 2023-01-23 15:25:34
+ */
+
 import { Item, Order, BufferedItems } from '@/types'
 import { ActionTypes } from '../store/types'
 import filemanager from '../store/filemanager'
@@ -21,13 +27,13 @@ import {
   CLEAR_FILES_TOBUFFER
 } from '../actions'
 
-//  todo 从action中引入过来给这类型定义
+// filemanager reducer
 export default function reducer(state = filemanager, action: ActionTypes) {
   let bufferedItems: BufferedItems
   switch (action.type) {
     case SET_IMAGE_SETTINGS:
       // 使用 ...state 将原始状态对象的所有属性复制到新对象中。
-      // 这样做的好处是我们没有直接修改原始状态对象，而是遵循了 Redux 的不可变性原则。这有助于确保状态管理更加高效且可预测。
+      // 这样做的好处是没有直接修改原始状态对象，而是遵循了 Redux 的不可变性原则。这有助于确保状态管理更加高效且可预测。
       return { ...state, showImages: action.imagePreview }
 
     case RUN_SORTING_FILTER:
@@ -65,10 +71,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
         result: Item[],
         file: Item
       ) {
-        /* true私有保护状态 不可拖动且会显示一把锁 且可选 
-                       false非私有保护状态 可拖动，正常选择
-                       这里文件如果是私有的的，就不能全选他
-                    */
+        // 判断文件是否开启保护状态 保护状态的文件 不可拖动、不可选择
         if (file.private !== true) {
           result.push(file)
         }
@@ -79,7 +82,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
 
     // 反选
     case INVERSE_SELECTED_FILES:
-      // 这里是原来是 on^2时间复杂度，可以优化成on的时间负责度（算法的应用）
+      // 原来是 on^2时间复杂度，优化成on的时间复杂度（算法的应用）
       // eslint-disable-next-line no-case-declarations
       const set = new Set(
         state.selectedFiles.map((selectedFile) => selectedFile.id)
@@ -94,7 +97,6 @@ export default function reducer(state = filemanager, action: ActionTypes) {
         },
         []
       )
-
       return { ...state, selectedFiles: inversedSelected }
 
     case COPY_FILES_TOBUFFER:
@@ -117,7 +119,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
         files: []
       }
       return { ...state, bufferedItems }
-    // 清空缓存,目前只接收一次粘贴
+    // 清空缓存,目前只接受一次粘贴
     case PASTE_FILES:
       bufferedItems = {
         type: '',
@@ -141,7 +143,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
     // 拿到API请求的当前路径下所有内容 更新到store
     case GET_FILES_LIST:
       // eslint-disable-next-line no-case-declarations
-      let filesList = Array.isArray(action.data.children ?? 0)
+      let filesList = Array.isArray(action.data.children)
         ? action.data.children
         : []
       filesList = sortFilter(filesList, state.orderFiles)
@@ -158,14 +160,18 @@ export default function reducer(state = filemanager, action: ActionTypes) {
 
     case SET_ITEM_VIEW:
       return { ...state, itemsView: action.view }
-
+    // 不做任何处理 需要loading 需要在此添加 case:xx_REQUEST 再做对应处理
     default:
       return state
   }
 }
 
-// 更加文件名、大小、创建日期(时间戳)，升序或者降序
-// 返回排序好的数组
+/**
+ * 根据文件名、大小、创建日期(时间戳)，升序或者降序
+ * @param filesList 文件夹内的所有待排序的文件对象
+ * @param forder 排序方式
+ * @return 排序结果
+ */
 function sortFilter(filesList: Item[], order: Order): Item[] {
   let sortedFiles: Item[] = []
   switch (order.field) {

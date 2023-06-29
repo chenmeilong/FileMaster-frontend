@@ -1,3 +1,9 @@
+/**
+ * @author MilesChen
+ * @description 上传文件按钮组
+ * @createDate 2023-02-05 20:37:09
+ */
+
 import React from 'react'
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@material-ui/core/ButtonGroup'
@@ -20,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-// 上传文件下方的按钮组件
 type Props = {
   buttons: {
     name: string
