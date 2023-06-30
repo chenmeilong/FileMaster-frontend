@@ -4,7 +4,7 @@
  * @createDate 2023-06-25 22:37:52
  */
 
-import { Item } from '@/types'
+import { Item, Messages } from '@/types'
 import {
   SET_SELECTED_FILES,
   UNSET_SELECTED_FILES,
@@ -30,7 +30,10 @@ import {
   DELETE_ITEMS,
   UPLOAD_FILES,
   SAVE_IMAGE,
-  ARCHIVE_FILES
+  ARCHIVE_FILES,
+  SET_MESSAGES,
+  SET_MESSAGES_ADD,
+  SET_MESSAGES_DELETE
 } from '../actions'
 
 export interface Request {
@@ -105,5 +108,10 @@ export type APIActionTypes =
       type: typeof UPLOAD_FILES
       data: object
     }
+// 通用 action
+export type CommonActionTypes =
+  | { type: typeof SET_MESSAGES; message: Messages }
+  | { type: typeof SET_MESSAGES_ADD; message: Messages }
+  | { type: typeof SET_MESSAGES_DELETE; message: Messages }
 // 所有的action请求type
-export type ActionTypes = LocalActionTypes | APIActionTypes
+export type ActionTypes = LocalActionTypes | APIActionTypes | CommonActionTypes

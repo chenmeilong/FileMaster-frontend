@@ -40,17 +40,6 @@ export interface Operations {
   handleDragEnd: (result: any) => void
 }
 
-// 提示消息Messages
-export interface Messages {
-  title: string
-  type: 'success' | 'info' | 'warning' | 'error'
-  message: string
-
-  progress?: boolean
-  disableClose?: boolean
-  timer?: number
-}
-
 // dialog
 export interface Popup {
   title: string

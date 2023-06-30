@@ -28,7 +28,8 @@ import {
   unzip,
   saveimage,
   listViewChange,
-  clearBufferFiles
+  clearBufferFiles,
+  setMessages
 } from '../Redux/actions'
 import { Paper, Grid, Box, Collapse } from '@material-ui/core/'
 import { makeStyles } from '@material-ui/core/styles'
@@ -42,8 +43,16 @@ import { convertDate, formatBytes } from '../Utils/Utils'
 import ImageEditor from './Elements/ImageEditor'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import './Assets/PerfectScroll.css'
-import { Popup, EditImage, Operations, Messages } from './types'
-import { Store, Item, BufferedItems, History, Steps, AxiosError } from '@/types'
+import { Popup, EditImage, Operations } from './types'
+import {
+  Store,
+  Item,
+  BufferedItems,
+  History,
+  Messages,
+  Steps,
+  AxiosError
+} from '@/types'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-const messagesListInital: Messages[] = []
 const editImageInital: EditImage = {
   open: false,
   closeCallBack: undefined,
@@ -141,6 +149,7 @@ type Props = {
   unzip: (file: string, destination: string) => any
   listViewChange: (view: string) => void
   clearBufferFiles: () => void
+  setMessages: (message: Messages) => void
 }
 
 const FileManager: React.FC<Props> = ({
@@ -176,13 +185,12 @@ const FileManager: React.FC<Props> = ({
   saveimage,
   unzip,
   listViewChange,
-  clearBufferFiles
+  clearBufferFiles,
+  setMessages
 }) => {
   const classes = useStyles()
   height = height !== undefined || height > 300 ? `${height}px` : '300px' //580px
   const bigHeight = `${window.innerHeight - 100}px` //622px
-  // 提示信息的配置
-  const [messagesList, setMessages] = useState(messagesListInital)
   // isloading状态 有白色遮罩层
   const [isloading, setLoading] = React.useState(false)
   // uploadBox状态 文件上传窗口状态, 通过状态后面控制启动
@@ -269,26 +277,22 @@ const FileManager: React.FC<Props> = ({
     // 复制到buffer
     handleCopy: () => {
       copyToBufferFiles()
-      setMessages([
-        {
-          title: `文件复制成功`,
-          type: 'info',
-          message: '您可以把它粘贴到任何文件夹中',
-          timer: 3000
-        }
-      ])
+      setMessages({
+        title: `文件复制成功`,
+        type: 'info',
+        message: '您可以把它粘贴到任何文件夹中',
+        timer: 3000
+      })
     },
     // 剪切到buffer
     handleCut: () => {
       cutToBufferFiles()
-      setMessages([
-        {
-          title: `文件剪切成功`,
-          type: 'info',
-          message: '您可以把它粘贴到任何文件夹中',
-          timer: 3000
-        }
-      ])
+      setMessages({
+        title: `文件剪切成功`,
+        type: 'info',
+        message: '您可以把它粘贴到任何文件夹中',
+        timer: 3000
+      })
     },
     // 粘贴
     handlePaste: () => {
@@ -297,23 +301,19 @@ const FileManager: React.FC<Props> = ({
       pasteFiles(files, bufferedItems.type, selectedFolder)
         .then(() => {
           operations.handleReload()
-          setMessages([
-            {
-              title: `文件成功粘贴`,
-              type: 'success',
-              message: '',
-              timer: 3000
-            }
-          ])
+          setMessages({
+            title: `文件成功粘贴`,
+            type: 'success',
+            message: '',
+            timer: 3000
+          })
         })
         .catch((error: AxiosError) => {
-          setMessages([
-            {
-              title: `粘贴时发生了错误`,
-              type: 'error',
-              message: error.message || ''
-            }
-          ])
+          setMessages({
+            title: `粘贴时发生了错误`,
+            type: 'error',
+            message: error.message || ''
+          })
         })
     },
 
@@ -327,14 +327,12 @@ const FileManager: React.FC<Props> = ({
       unsetSelectedFiles()
       setSelectedFolder(value, history)
       getFilesList(value).then(() => {
-        setMessages([
-          {
-            title: `文件加载成功`,
-            type: 'success',
-            message: '',
-            timer: 3000
-          }
-        ])
+        setMessages({
+          title: `文件加载成功`,
+          type: 'success',
+          message: '',
+          timer: 3000
+        })
       })
     },
     // 删除选择文件或者文件夹
@@ -349,22 +347,18 @@ const FileManager: React.FC<Props> = ({
           .then(() => {
             unsetSelectedFiles()
             operations.handleReload()
-            setMessages([
-              {
-                title: `删除文件请求`,
-                type: 'success',
-                message: '文件已删除'
-              }
-            ])
+            setMessages({
+              title: `文件已删除`,
+              type: 'success',
+              message: ''
+            })
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `删除时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `删除时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -390,22 +384,18 @@ const FileManager: React.FC<Props> = ({
           .then(() => {
             unsetSelectedFiles()
             operations.handleReload()
-            setMessages([
-              {
-                title: `已成功删除所有文件和文件夹`,
-                type: 'success',
-                message: ''
-              }
-            ])
+            setMessages({
+              title: `已成功删除所有文件和文件夹`,
+              type: 'success',
+              message: ''
+            })
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `清空文件夹时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `清空文件夹时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -433,13 +423,11 @@ const FileManager: React.FC<Props> = ({
             operations.handleReload()
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `创建文件时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `创建文件时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -472,13 +460,11 @@ const FileManager: React.FC<Props> = ({
             operations.handleReload()
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `创建文件夹时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `创建文件夹时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -513,13 +499,11 @@ const FileManager: React.FC<Props> = ({
             operations.handleReload()
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `重命名时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `重命名时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
       // ?????
@@ -538,19 +522,16 @@ const FileManager: React.FC<Props> = ({
     // 重载 当前目录文件和文件夹树
     handleReload: () => {
       setLoading(true)
-      setMessages([
-        {
-          title: `加载中...`,
-          type: 'info',
-          message: '',
-          progress: true,
-          disableClose: true
-        }
-      ])
+      setMessages({
+        title: `加载中...`,
+        type: 'info',
+        message: '',
+        progress: true,
+        disableClose: true
+      })
       getFilesList(selectedFolder)
       getFoldersList().then(() => {
         setLoading(false)
-        setMessages([])
       })
     },
     // 快速复制一个文件或文件夹
@@ -562,13 +543,11 @@ const FileManager: React.FC<Props> = ({
           operations.handleReload()
         })
         .catch((error: AxiosError) => {
-          setMessages([
-            {
-              title: `复制时发生错误`,
-              type: 'error',
-              message: error.message || ''
-            }
-          ])
+          setMessages({
+            title: `复制时发生错误`,
+            type: 'error',
+            message: error.message || ''
+          })
         })
     },
     // 创建压缩包
@@ -590,13 +569,11 @@ const FileManager: React.FC<Props> = ({
             unsetSelectedFiles()
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `创建压缩包时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `创建压缩包时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -628,13 +605,11 @@ const FileManager: React.FC<Props> = ({
             unsetSelectedFiles()
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `解压时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `解压时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
 
@@ -738,26 +713,22 @@ const FileManager: React.FC<Props> = ({
             unsetSelectedFiles()
             getFilesList(selectedFolder)
               .then(() => {
-                setMessages([
-                  {
-                    title: `图片保存成功`,
-                    type: 'info',
-                    message: '由于缓存,可能没及时更新,请更新页面 '
-                  }
-                ])
+                setMessages({
+                  title: `图片保存成功`,
+                  type: 'info',
+                  message: '由于缓存,可能没及时更新,请更新页面 '
+                })
               })
               .catch((error: AxiosError) => {
                 console.log(error)
               })
           })
           .catch((error: AxiosError) => {
-            setMessages([
-              {
-                title: `保存图像时发生错误`,
-                type: 'error',
-                message: error.message || ''
-              }
-            ])
+            setMessages({
+              title: `保存图像时发生错误`,
+              type: 'error',
+              message: error.message || ''
+            })
           })
       }
       setEditImage({
@@ -815,14 +786,12 @@ const FileManager: React.FC<Props> = ({
           pasteFiles(files, 'cut', destination)
             .then(() => {
               operations.handleReload()
-              setMessages([
-                {
-                  title: `文件移动成功`,
-                  type: 'success',
-                  message: '您拖动的文件已成功移动',
-                  timer: 3000
-                }
-              ])
+              setMessages({
+                title: `文件移动成功`,
+                type: 'success',
+                message: '您拖动的文件已成功移动',
+                timer: 3000
+              })
             })
             .catch(() => {
               console.log('#####################')
@@ -1137,7 +1106,6 @@ const FileManager: React.FC<Props> = ({
               <div style={{ maxHeight: expand ? bigHeight : height }}>
                 <ContainerBar
                   buttons={aviableButtons}
-                  messages={messagesList}
                   isloading={isloading}
                   uploadBox={uploadBox}
                   operations={operations}
@@ -1209,7 +1177,8 @@ const FileManagerConnect = connect(
     saveimage,
     unzip,
     listViewChange,
-    clearBufferFiles
+    clearBufferFiles,
+    setMessages
   }
 )(FileManager)
 

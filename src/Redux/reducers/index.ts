@@ -6,9 +6,11 @@
 
 import { combineReducers } from 'redux'
 import filemanagerReducers from './filemanager'
+import commonReducers from './common'
 
 const reducer = combineReducers({
-  filemanager: filemanagerReducers
+  filemanager: filemanagerReducers,
+  common: commonReducers
 })
 
 export default reducer

@@ -13,8 +13,8 @@ import InfoBoxes from './Elements/InfoBoxes'
 import Dropzone from './Elements/Dropzone'
 
 import ViewItems from './ViewItems'
-import { Store, Item } from '@/types'
-import { Messages, ButtonType, AviableButtons, Operations } from './types'
+import { Store, Item, Messages } from '@/types'
+import { ButtonType, AviableButtons, Operations } from './types'
 
 interface ContextMenuInitial {
   mouseX: number | null
@@ -26,8 +26,6 @@ const contextMenuInital: ContextMenuInitial = {
 }
 
 type Props = {
-  // 提示信息配置
-  messages: Messages[]
   // 所有操作的大集合
   operations: Operations
   isloading: boolean
@@ -39,7 +37,6 @@ type Props = {
 }
 
 const ContainerBar: React.FC<Props> = ({
-  messages,
   operations,
   isloading,
   selectedFolder,
@@ -97,11 +94,7 @@ const ContainerBar: React.FC<Props> = ({
     <Box className={classes.root}>
       {/* 消息提示窗体 多条提示消息就一条条显示 有些小问题 todo */}
       <div className={classes.messagesBox}>
-        {messages.map(
-          (alert: Messages, index: React.Key | null | undefined) => (
-            <InfoBoxes key={index} alert={alert} />
-          )
-        )}
+        <InfoBoxes />
       </div>
       {/* 提示加载中的遮罩层 */}
       {isloading && (

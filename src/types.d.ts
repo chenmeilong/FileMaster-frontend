@@ -57,12 +57,28 @@ export interface FilemanagerStore {
   itemsView: 'list' | 'grid'
 }
 
-export interface Store {
-  filemanager: FilemanagerStore
-}
-
 export interface AxiosError {
   message?: string
   type: string
   error: object | string
+}
+
+// 提示消息Messages
+export interface Messages {
+  title: string
+  type: 'success' | 'info' | 'warning' | 'error'
+  message: string
+
+  progress?: boolean
+  disableClose?: boolean
+  timer?: number
+}
+
+export interface CommonStore {
+  messages: Messages[]
+}
+
+export interface Store {
+  filemanager: FilemanagerStore
+  common: CommonStore
 }

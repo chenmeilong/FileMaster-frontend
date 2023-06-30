@@ -1,18 +1,19 @@
 /**
  * @author MilesChen
  * @description message 消息提示组件
- * @createDate 2023-02-07 10:23:15
+ * @createDate 2023-06-30 20:23:15
  */
 
-import React, { useEffect, useRef } from 'react'
+import React from 'react'
+import { connect } from 'react-redux'
+import { Store, Messages } from '@/types'
 import Alert from '@material-ui/lab/Alert'
 import AlertTitle from '@material-ui/lab/AlertTitle'
 import IconButton from '@material-ui/core/IconButton'
 import Collapse from '@material-ui/core/Collapse'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { makeStyles } from '@material-ui/core/styles'
-import { Messages } from '../types'
-
+import { setMessages } from '@/Redux/actions'
 const useStyles = makeStyles(() => ({
   root: {
     margin: '0px 0px 10px 0px'
@@ -32,46 +33,29 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-// 上次更新的的消息内容
-function usePrevious(value: Messages) {
-  const ref = useRef<Messages>()
-  useEffect(() => {
-    ref.current = value
-  })
-  return ref.current
-}
-
 type Props = {
-  alert: Messages
+  // 消息
+  messages: Messages[]
+  setMessages: (message: Messages) => void
 }
 
-const InfoBoxes: React.FC<Props> = ({ alert }) => {
-  const [open, setOpen] = React.useState(true)
-  const prevAlert = usePrevious(alert)
+const InfoBoxes: React.FC<Props> = ({ messages, setMessages }) => {
   const classes = useStyles()
-  const timerRef = useRef<number>()
-  // todo 自动关闭目前有bug
-  useEffect(() => {
-    if (prevAlert !== alert) {
-      setOpen(true)
-    }
-  }, [alert, prevAlert])
+  const alert = messages[0]
+  console.log(messages)
 
-  // 到时间自动关闭弹窗
-  useEffect(() => {
-    if (alert.timer) {
-      timerRef.current = window.setTimeout(() => {
-        setOpen(false)
-      }, alert.timer)
-    }
-    return () => {
-      clearTimeout(timerRef.current)
-    }
-  }, [alert.timer])
+  const clearMessages = () => {
+    // 清空消息
+    setMessages({
+      title: '',
+      type: 'info',
+      message: ''
+    })
+  }
 
   return (
-    <>
-      <Collapse in={open}>
+    (messages.length > 0 ? true : null) && (
+      <Collapse in={messages.length > 0}>
         <Alert
           key={alert.type}
           className={classes.root}
@@ -83,9 +67,7 @@ const InfoBoxes: React.FC<Props> = ({ alert }) => {
                 aria-label="close"
                 color="inherit"
                 size="small"
-                onClick={() => {
-                  setOpen(false)
-                }}
+                onClick={clearMessages}
               >
                 <span className="icon-cancel"></span>
               </IconButton>
@@ -97,8 +79,15 @@ const InfoBoxes: React.FC<Props> = ({ alert }) => {
         </Alert>
         {alert.progress && <LinearProgress className={classes.progress} />}
       </Collapse>
-    </>
+    )
   )
 }
 
-export default InfoBoxes
+const InfoBoxesConnect = connect(
+  (store: Store) => ({
+    messages: store.common.messages
+  }),
+  { setMessages }
+)(InfoBoxes)
+
+export default InfoBoxesConnect
