@@ -42,8 +42,6 @@ type Props = {
 const InfoBoxes: React.FC<Props> = ({ messages, setMessages }) => {
   const classes = useStyles()
   const alert = messages[0]
-  console.log(messages)
-
   const clearMessages = () => {
     // 清空消息
     setMessages({

@@ -39,7 +39,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
     case RUN_SORTING_FILTER:
       // eslint-disable-next-line no-case-declarations
       const sortedFiles: Item[] = sortFilter(state.filesList, state.orderFiles)
-      return { ...state, filesList: sortedFiles }
+      return { ...state, filesList: [...sortedFiles] }
 
     case SET_SORT_ORDER_BY:
       return {
@@ -173,10 +173,9 @@ export default function reducer(state = filemanager, action: ActionTypes) {
  * @return 排序结果
  */
 function sortFilter(filesList: Item[], order: Order): Item[] {
-  let sortedFiles: Item[] = []
   switch (order.field) {
     case 'name':
-      sortedFiles = filesList.sort(function (a: Item, b: Item) {
+      filesList.sort(function (a: Item, b: Item) {
         const x = a.name.toLowerCase()
         const y = b.name.toLowerCase()
         if (x < y) {
@@ -189,21 +188,18 @@ function sortFilter(filesList: Item[], order: Order): Item[] {
       })
       break
     case 'size':
-      sortedFiles = filesList.sort(function (a: Item, b: Item) {
+      filesList.sort(function (a: Item, b: Item) {
         // 访问可选属性 如果是undefined则给与默认值0
         return (a.size ?? 0) - (b.size ?? 0)
       })
       break
-
     case 'date':
-      sortedFiles = filesList.sort(function (a: Item, b: Item) {
+      filesList.sort(function (a: Item, b: Item) {
         return new Date(a.created).getTime() - new Date(b.created).getTime()
       })
       break
-
     default:
-      sortedFiles = filesList
       break
   }
-  return order.orderBy === 'asc' ? sortedFiles : sortedFiles.reverse()
+  return order.orderBy === 'asc' ? filesList : filesList.reverse()
 }

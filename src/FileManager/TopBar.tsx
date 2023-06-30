@@ -59,7 +59,14 @@ type Props = {
   showImages: string
 }
 
-const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
+const TopBar: React.FC<Props> = ({
+  buttons,
+  filterSorting,
+  orderFiles,
+  setImagesSettings,
+  setSorting,
+  showImages
+}) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState(null)
   // todo 搜索功能
@@ -100,6 +107,7 @@ const TopBar: React.FC<Props> = ({ buttons, orderFiles, showImages }) => {
     setSorting(orderFiles.orderBy, field)
     // 给 store中的filesList 排序
     filterSorting()
+    // 刷新 todo
   }
   // 关闭弹窗
   const handleClose = () => {
