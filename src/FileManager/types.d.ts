@@ -40,7 +40,7 @@ export interface Operations {
   handleDragEnd: (result: any) => void
 }
 
-// dialog
+// dialogz
 export interface Popup {
   title: string
   description: string

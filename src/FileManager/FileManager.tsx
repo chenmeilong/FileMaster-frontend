@@ -203,7 +203,7 @@ const FileManager: React.FC<Props> = ({
   // 图片编辑 状态管理
   const [editImage, setEditImage] = React.useState(editImageInital)
   // message 状态管理
-  const [popupData, setPopup] = useState(popupDataInital)
+  const [popupData, setPopup] = React.useState(popupDataInital)
 
   /**
    * 跳转到指定路径
@@ -225,7 +225,9 @@ const FileManager: React.FC<Props> = ({
   // 关闭弹窗
   const handleClose = () => {
     setPopup((state) => {
+      // 踩坑 深度copy才能响应
       state.open = false
+      state = { ...state }
       return state
     })
   }
@@ -363,7 +365,7 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `删除选定的文件和文件夹: ${selectedFiles.length}`,
+        title: `删除选定内容`,
         description: `所有选定的文件和文件夹将被删除而无法恢复 `,
         handleClose: handleClose,
         handleSubmit: handleDeleteSubmit,
@@ -385,7 +387,7 @@ const FileManager: React.FC<Props> = ({
             unsetSelectedFiles()
             operations.handleReload()
             setMessages({
-              title: `已成功删除所有文件和文件夹`,
+              title: `已成功清空当前路径下的所有内容`,
               type: 'success',
               message: ''
             })
@@ -400,7 +402,7 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `删除目录中的所有文件和文件夹: ${path}`,
+        title: `删除目录中的所有内容: ${path}`,
         description: `所有文件和文件夹将删除且不可恢复 `,
         handleClose: handleClose,
         handleSubmit: handleEmptySubmit,
@@ -432,8 +434,8 @@ const FileManager: React.FC<Props> = ({
       }
 
       handleClickPopupOpen({
-        title: `创建新文件`,
-        description: '只能创建允许的文件扩展名,否则将被服务器忽略.',
+        title: `新建文件`,
+        description: '只能创建允许的文件类型,否则将被服务器忽略.',
         handleClose: handleClose,
         handleSubmit: handleNewFileSubmit,
         nameInputSets: {

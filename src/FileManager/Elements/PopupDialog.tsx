@@ -13,7 +13,6 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Zoom from '@material-ui/core/Zoom'
 import { ZoomProps } from '@material-ui/core/Zoom'
-import useStyles from './Styles'
 import { Popup } from '../types'
 import { TextField } from '@material-ui/core'
 // 打开dialog 从小到大的动画效果
@@ -32,7 +31,6 @@ const AlertDialogSlide: React.FC<Popup> = ({
   // 名称输入配置
   nameInputSets
 }) => {
-  const classes = useStyles()
   const nameValue =
     typeof nameInputSets.value !== undefined ? nameInputSets.value : ''
   // 文件名 状态 使用useState实现数据双向绑定
@@ -52,13 +50,9 @@ const AlertDialogSlide: React.FC<Popup> = ({
         className="dialogBlock"
       >
         <DialogTitle className="dialogTitle">{title}</DialogTitle>
-
         <DialogContent>
           <DialogContentText className="dialogDescription">
-            <div
-              className={classes.dialogDescription}
-              dangerouslySetInnerHTML={{ __html: description }}
-            ></div>
+            {description}
           </DialogContentText>
           {nameInputSets.value && (
             <div className="form-group">
@@ -77,13 +71,17 @@ const AlertDialogSlide: React.FC<Popup> = ({
 
         <DialogActions className="dialogButtons">
           {handleClose && (
-            <Button onClick={handleClose} variant="contained" color="secondary">
-              Cancel
+            <Button onClick={handleClose} variant="contained" color="primary">
+              返回
             </Button>
           )}
           {handleSubmit && (
-            <Button onClick={handleSubmit} variant="contained" color="primary">
-              Submit
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              color="secondary"
+            >
+              确认
             </Button>
           )}
         </DialogActions>
