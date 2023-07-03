@@ -60,7 +60,6 @@ const ContainerBar: React.FC<Props> = ({
     clientY: number
   }) => {
     event.stopPropagation()
-    // 防止浏览器的默认菜单
     event.preventDefault()
     contentContexSet(contextMenuInital)
     itemContexSet({
@@ -76,7 +75,6 @@ const ContainerBar: React.FC<Props> = ({
     clientY: number
   }) => {
     event.stopPropagation()
-    // 防止浏览器的默认菜单
     event.preventDefault()
     itemContexSet(contextMenuInital)
     contentContexSet({
@@ -88,6 +86,46 @@ const ContainerBar: React.FC<Props> = ({
   const handleContextClose = () => {
     itemContexSet(contextMenuInital)
     contentContexSet(contextMenuInital)
+  }
+
+  // 移动空白区域右键菜单
+  const handleContentMove = (event: {
+    stopPropagation: () => void
+    preventDefault: () => void
+    clientX: number
+    clientY: number
+  }) => {
+    event.preventDefault()
+    itemContexSet(contextMenuInital)
+    contentContexSet(contextMenuInital)
+    // 200ms延时，提高连续右键菜单的体验感
+    setTimeout(() => {
+      contentContexSet({
+        mouseX: event.clientX - 2,
+        mouseY: event.clientY - 4
+      })
+    }, 200)
+  }
+
+  // 移动Item上的右键菜单
+  const handleItemMove = (event: {
+    stopPropagation: () => void
+    preventDefault: () => void
+    clientX: number
+    clientY: number
+  }) => {
+    event.preventDefault()
+    itemContexSet(contextMenuInital)
+    contentContexSet(contextMenuInital)
+    // 取消选中，并选中当前位置的 Item
+
+    // 200ms延时，提高连续右键菜单的体验感
+    setTimeout(() => {
+      itemContexSet({
+        mouseX: event.clientX - 2,
+        mouseY: event.clientY - 4
+      })
+    }, 200)
   }
 
   // Debug
@@ -137,7 +175,7 @@ const ContainerBar: React.FC<Props> = ({
         keepMounted
         open={itemContext.mouseY !== null}
         className={classes.menu}
-        onContextMenu={handleContextClose}
+        onContextMenu={handleItemMove}
         onClose={handleContextClose}
         anchorReference="anchorPosition"
         anchorPosition={
@@ -166,7 +204,7 @@ const ContainerBar: React.FC<Props> = ({
         keepMounted
         open={contentContex.mouseY !== null}
         className={classes.menu}
-        onContextMenu={handleContextClose}
+        onContextMenu={handleContentMove}
         onClose={handleContextClose}
         anchorReference="anchorPosition"
         anchorPosition={
