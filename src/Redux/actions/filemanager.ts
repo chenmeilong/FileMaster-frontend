@@ -38,6 +38,7 @@ export const SET_SORT_ORDER_BY = 'SET_SORT_ORDER_BY'
 export const RUN_SORTING_FILTER = 'RUN_SORTING_FILTER'
 export const SET_IMAGE_SETTINGS = 'SET_IMAGE_SETTINGS'
 export const UPLOAD_FILES = 'UPLOAD_FILES'
+export const MOVE_ITEM = 'MOVE_ITEM'
 
 //  todo 因为使用中间件，实际的返回值可能不是这里的返回值，需要更加精准的类型定义
 export function setSelectedFiles(item: Item): LocalActionTypes {
@@ -311,5 +312,13 @@ export function uploadFile(body: FormData) {
       url: '/fm/upload'
     },
     body
+  }
+}
+// 修改排序方式
+export function moveItem(oldIndex: number, newIndex: number) {
+  return {
+    oldIndex,
+    newIndex,
+    type: MOVE_ITEM
   }
 }

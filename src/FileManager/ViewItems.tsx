@@ -13,7 +13,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Box,
+  Paper,
   Checkbox,
   Tooltip
 } from '@material-ui/core'
@@ -40,7 +40,7 @@ type Props = {
   doubleClick: (value: string, history?: boolean) => void
   filesList: Item[]
   itemsView: 'list' | 'grid'
-  // 右键点击事件 todo 与浏览器右边冲突
+  // 右键点击事件 todo 与浏览器冲突
   onContextMenuClick: (event: {
     stopPropagation: () => void
     preventDefault: () => void
@@ -62,6 +62,7 @@ const ViewItems: React.FC<Props> = ({
   showImages
 }) => {
   const classes = useStyles()
+
   // 获取图标，小图标
   const getThumb = (item: Item) => {
     try {
@@ -87,6 +88,18 @@ const ViewItems: React.FC<Props> = ({
       return config.icons.broken
     }
   }
+
+  function getIcon(
+    item: Item,
+    combineTargetFor: string | null | undefined
+  ): string {
+    if (item.type === 'folder') {
+      return combineTargetFor ? config.icons.folderopen : config.icons.folder
+    } else {
+      return getThumb(item)
+    }
+  }
+
   // 右键菜单
   const handleContextMenuClick = async (
     item: Item,
@@ -109,254 +122,118 @@ const ViewItems: React.FC<Props> = ({
     return false
   }
 
-  function getStyle() {
-    return {
-      background: '#f00 !important'
-    }
-  }
-
-  // 网格布局文件渲染
-  const FileItem: React.FC<ItemProps> = ({ item, index }) => {
-    const fileCuted = isCuted(item)
-    const isSelected = checkIsSelected(item)
-
-    return (
-      <Draggable
-        draggableId={item.id}
-        index={index}
-        isDragDisabled={item.private}
-      >
-        {(provided, snapshot) => (
-          <Box
-            // 使用div代替可以解决 todo 目前先注释
-            // ref={provided.innerRef}
-            onContextMenu={(event) => handleContextMenuClick(item, event)}
-            className={clsx(classes.itemFile, {
-              selected: selectedFiles.includes(item),
-              selectmode: selectedFiles.length > 0,
-              notDragging: !snapshot.isDragging,
-              fileCuted: fileCuted
-            })}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            {/* true 保护状态 不可拖动且会显示一把锁 且不可选 */}
-            {/* false 非保护状态 可拖动，正常选择 */}
-            {(item.private && (
-              <span className={`icon-lock ${classes.locked}`} />
-            )) || (
-              <Checkbox
-                className={classes.checkbox}
-                checked={isSelected}
-                onChange={() => addSelect(item)}
-                value={item.id}
-              />
-            )}
-            <span className={classes.extension}>{item.extension}</span>
-
-            <div className={classes.infoBox}>
-              <img src={getThumb(item)} />
-            </div>
-            {/* 鼠标放上显示tooltip全名 */}
-            <Tooltip title={item.name}>
-              <div className={classes.itemTitle}>
-                <span>{item.name}</span>
-              </div>
-            </Tooltip>
-          </Box>
-        )}
-      </Draggable>
-    )
-  }
-
   // 网格布局文件夹渲染
-  const FolderItem: React.FC<ItemProps> = ({ item, index }) => {
+  const GridItem: React.FC<ItemProps> = ({ item, index }) => {
     const fileCuted = isCuted(item)
     const isSelected = checkIsSelected(item)
     return (
       <Draggable
-        index={index}
         draggableId={item.id}
+        index={index}
         isDragDisabled={item.private}
       >
         {(provided, snapshot) => (
-          <Box
-            // 使用div代替可以解决 todo 目前先注释
-            // ref={provided.innerRef}
+          <div
+            onContextMenu={(event) => handleContextMenuClick(item, event)}
             className={clsx(classes.itemFile, {
               selected: selectedFiles.includes(item),
               selectmode: selectedFiles.length > 0,
               notDragging: !snapshot.isDragging,
               fileCuted: fileCuted
             })}
-            onDoubleClick={() => doubleClick(item.path)}
-            onContextMenu={(event) => handleContextMenuClick(item, event)}
+            ref={provided.innerRef}
+            onDoubleClick={
+              item.type === 'folder' ? () => doubleClick(item.path) : undefined
+            }
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            <Droppable
-              droppableId={item.id}
-              type="CONTAINERITEM"
-              isCombineEnabled
-            >
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  style={getStyle()}
-                >
-                  {(item.private && (
-                    <span className={`icon-lock ${classes.locked}`} />
-                  )) || (
-                    <Checkbox
-                      className={classes.checkbox}
-                      checked={isSelected}
-                      onChange={() => addSelect(item)}
-                      value={item.id}
-                    />
-                  )}
-                  <div className={classes.infoBox}>
-                    <img
-                      src={
-                        snapshot.isDraggingOver
-                          ? config.icons.folderopen
-                          : config.icons.folder
-                      }
-                    />
-                  </div>
-                  <Tooltip
-                    title={
-                      <>
-                        <b>Name :</b> {item.name} <br />
-                        <b>Created :</b> {convertDate(item.created)}
-                      </>
-                    }
-                  >
-                    <div className={classes.itemTitle}>
-                      <span>{item.name}</span>
-                    </div>
-                  </Tooltip>
-                  {provided.placeholder}
-                </div>
+            <div>
+              {(item.private && (
+                <span className={`icon-lock ${classes.locked}`} />
+              )) || (
+                <Checkbox
+                  className={classes.checkbox}
+                  checked={isSelected}
+                  onChange={() => addSelect(item)}
+                  value={item.id}
+                />
               )}
-            </Droppable>
-          </Box>
+              <div className={classes.infoBox}>
+                <img src={getIcon(item, snapshot.combineTargetFor)} />
+              </div>
+              <Tooltip
+                title={
+                  <>
+                    <b>Name :</b> {item.name} <br />
+                    <b>Created :</b> {convertDate(item.created)}
+                  </>
+                }
+              >
+                <div className={classes.itemTitle}>
+                  <span>{item.name}</span>
+                </div>
+              </Tooltip>
+            </div>
+          </div>
         )}
       </Draggable>
     )
   }
-  // list文件夹渲染
-  const ListFolderItem: React.FC<ItemProps> = ({ item, index }) => {
-    // todo 实现剪切变透明
+  // list文件渲染
+  const ListItem: React.FC<ItemProps> = ({ item, index }) => {
+    // todo 保护文件不可拖动
     const fileCuted = isCuted(item)
     const isSelected = checkIsSelected(item)
 
     return (
-      <Draggable index={index} draggableId={item.id}>
-        {(provided) => (
+      <Draggable
+        draggableId={item.id}
+        index={index}
+        isDragDisabled={item.private}
+        // shouldRespectForcePress={false}
+      >
+        {(provided, snapshot) => (
           <TableRow
-            ref={provided.innerRef}
+            onContextMenu={(event) => handleContextMenuClick(item, event)}
             // 动态处理className
             className={clsx(classes.tableListRow, {
               selected: selectedFiles.includes(item),
-              fileCuted: fileCuted,
-              // 启动选择模式
-              selectmodeTable: selectedFiles.length > 0
-            })}
-            onDoubleClick={() => doubleClick(item.path)}
-            onContextMenu={(event) => handleContextMenuClick(item, event)}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            <Droppable
-              droppableId={item.id}
-              type="CONTAINERITEM"
-              isCombineEnabled
-            >
-              {(provided, snapshot) => (
-                <>
-                  <TableCell className={classes.tableCell}>
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={() => addSelect(item)}
-                      value={item.id}
-                    />
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    <img
-                      style={{ width: '20px' }}
-                      src={
-                        snapshot.isDraggingOver
-                          ? config.icons.folderopen
-                          : config.icons.folder
-                      }
-                    />
-                  </TableCell>
-                  <TableCell className={classes.tableCell} align="left">
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      style={getStyle()}
-                    >
-                      {item.name}
-                      {provided.placeholder}
-                    </div>
-                  </TableCell>
-                  <TableCell className={classes.tableCell} align="left">
-                    {formatBytes(item.size)}
-                  </TableCell>
-                  <TableCell className={classes.tableCell} align="left">
-                    {convertDate(item.created)}
-                  </TableCell>
-                </>
-              )}
-            </Droppable>
-          </TableRow>
-        )}
-      </Draggable>
-    )
-  }
-  // list布局文件渲染
-  const ListFileItem: React.FC<ItemProps> = ({ item, index }) => {
-    const fileCuted = isCuted(item)
-    const isSelected = checkIsSelected(item)
-
-    return (
-      <Draggable draggableId={item.id} index={index}>
-        {(provided) => (
-          <TableRow
-            onContextMenu={(event) => handleContextMenuClick(item, event)}
-            className={clsx(classes.tableListRow, {
-              selected: selectedFiles.includes(item),
+              dragging: snapshot.isDragging,
               fileCuted: fileCuted,
               selectmodeTable: selectedFiles.length > 0
             })}
             ref={provided.innerRef}
+            onDoubleClick={
+              item.type === 'folder' ? () => doubleClick(item.path) : undefined
+            }
             {...provided.draggableProps}
             {...provided.dragHandleProps}
           >
-            <TableCell className={classes.tableCell}>
-              <Checkbox
-                checked={isSelected}
-                onChange={() => addSelect(item)}
-                value={item.id}
-              />
-            </TableCell>
-            <TableCell className={classes.tableCell}>
-              <img
-                style={{ width: '20px', maxHeight: '30px' }}
-                src={getThumb(item)}
-              />
-            </TableCell>
-            <TableCell className={classes.tableCell} align="left">
-              {item.name}
-            </TableCell>
-            <TableCell className={classes.tableCell} align="left">
-              {formatBytes(item.size)}
-            </TableCell>
-            <TableCell className={classes.tableCell} align="left">
-              {convertDate(item.created)}
-            </TableCell>
+            <>
+              <TableCell className={classes.checkBoxTableCell}>
+                <Checkbox
+                  checked={isSelected}
+                  onChange={() => addSelect(item)}
+                  value={item.id}
+                />
+              </TableCell>
+              <TableCell className={classes.icoTableCell}>
+                <img
+                  style={{ width: '20px' }}
+                  src={getIcon(item, snapshot.combineTargetFor)}
+                />
+              </TableCell>
+              <TableCell className={classes.tableCell} align="left">
+                <div>{item.name}</div>
+              </TableCell>
+              <TableCell className={classes.sizeTableCell} align="left">
+                {formatBytes(item.size)}
+              </TableCell>
+              <TableCell className={classes.createTimeTableCell} align="left">
+                {convertDate(item.created)}
+              </TableCell>
+            </>
           </TableRow>
         )}
       </Draggable>
@@ -366,8 +243,8 @@ const ViewItems: React.FC<Props> = ({
   // List布局
   const ListView = () => {
     return (
-      // TableContainer component={Box} 这样组合在一起为便于写css
-      <TableContainer component={Box}>
+      // TableContainer component={Paper} 在挖层包裹一层Paper其实并没没什么用
+      <TableContainer component={Paper}>
         <Table
           className={classes.table}
           size="small"
@@ -393,20 +270,9 @@ const ViewItems: React.FC<Props> = ({
           >
             {(provided) => (
               <TableBody ref={provided.innerRef} {...provided.droppableProps}>
-                {/* 先渲染文件夹 */}
-                {filesList.map(
-                  (item, index) =>
-                    item.type === 'folder' && (
-                      <ListFolderItem key={index} index={index} item={item} />
-                    )
-                )}
-                {/* 后渲染文件  */}
-                {filesList.map(
-                  (item, index) =>
-                    item.type === 'file' && (
-                      <ListFileItem key={index} index={index} item={item} />
-                    )
-                )}
+                {filesList.map((item, index) => (
+                  <ListItem key={index} index={index} item={item} />
+                ))}
                 {provided.placeholder}
               </TableBody>
             )}
@@ -427,20 +293,9 @@ const ViewItems: React.FC<Props> = ({
         >
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
-              {/* 先渲染文件夹 */}
-              {filesList.map(
-                (item, index) =>
-                  item.type === 'folder' && (
-                    <FolderItem key={index} index={index} item={item} />
-                  )
-              )}
-              {/* 后渲染文件  */}
-              {filesList.map(
-                (item, index) =>
-                  item.type === 'file' && (
-                    <FileItem key={index} index={index} item={item} />
-                  )
-              )}
+              {filesList.map((item, index) => (
+                <GridItem key={index} index={index} item={item} />
+              ))}
               {provided.placeholder}
             </div>
           )}

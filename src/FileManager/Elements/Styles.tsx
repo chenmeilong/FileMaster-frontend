@@ -14,14 +14,33 @@ const style = makeStyles(() => ({
     padding: '0px'
   },
   tableCell: {
+    width: '75%',
     padding: '0px'
   },
+  checkBoxTableCell: {
+    padding: '0px',
+    width: '50px'
+  },
+  icoTableCell: {
+    padding: '0 15px 0 0'
+  },
+  sizeTableCell: {
+    padding: '0px',
+    width: '10%'
+  },
+  createTimeTableCell: {
+    padding: '0px',
+    width: '15%'
+  },
   tableListRow: {
-    '&:hover td, &.selectmodeTable td': {
+    '&:hover td, &.selectmodeTable td ,&.dragging td': {
       background: '#f1f1f1'
     },
     '&.selected td': {
       background: '#e0f0fb'
+    },
+    '&.fileCuted': {
+      opacity: '0.5'
     }
   },
   tableHead: {

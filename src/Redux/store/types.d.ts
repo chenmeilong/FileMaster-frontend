@@ -33,7 +33,8 @@ import {
   ARCHIVE_FILES,
   SET_MESSAGES,
   SET_MESSAGES_ADD,
-  SET_MESSAGES_DELETE
+  SET_MESSAGES_DELETE,
+  MOVE_ITEM
 } from '../actions'
 
 export interface Request {
@@ -56,6 +57,7 @@ export type LocalActionTypes =
   | { type: typeof CLEAR_FILES_TOBUFFER }
   | { type: typeof SET_SELECTED_FOLDER; path: string; history: boolean }
   | { type: typeof SET_HISTORY_INDEX; index: number }
+  | { type: typeof MOVE_ITEM; oldIndex: number; newIndex: number }
 
 // todo 给每个请求的API返回的内容添加类型定义
 // 走中间件axios请求的action

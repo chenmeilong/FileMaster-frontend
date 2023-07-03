@@ -13,7 +13,7 @@ import InfoBoxes from './Elements/InfoBoxes'
 import Dropzone from './Elements/Dropzone'
 
 import ViewItems from './ViewItems'
-import { Store, Item, Messages } from '@/types'
+import { Store, Item } from '@/types'
 import { ButtonType, AviableButtons, Operations } from './types'
 
 interface ContextMenuInitial {
@@ -90,6 +90,11 @@ const ContainerBar: React.FC<Props> = ({
     contentContexSet(contextMenuInital)
   }
 
+  // Debug
+  // const dragUpdate = (e)=>{
+  //   console.log(e);
+  // }
+
   return (
     <Box className={classes.root}>
       {/* 消息提示窗体 多条提示消息就一条条显示 有些小问题 todo */}
@@ -115,7 +120,10 @@ const ContainerBar: React.FC<Props> = ({
         onContextMenu={handleContentContextClick}
       >
         {/* 拖放交互功能 */}
-        <DragDropContext onDragEnd={operations.handleDragEnd}>
+        <DragDropContext
+          onDragEnd={operations.handleDragEnd}
+          // onDragUpdate = {(e)=>dragUpdate(e)}
+        >
           <ViewItems
             onContextMenuClick={handleItemContextClick}
             doubleClick={operations.handleSetMainFolder}

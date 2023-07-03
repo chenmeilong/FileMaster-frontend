@@ -24,7 +24,8 @@ import {
   SET_SORT_ORDER_BY,
   RUN_SORTING_FILTER,
   SET_IMAGE_SETTINGS,
-  CLEAR_FILES_TOBUFFER
+  CLEAR_FILES_TOBUFFER,
+  MOVE_ITEM
 } from '../actions'
 
 // filemanager reducer
@@ -39,7 +40,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
     case RUN_SORTING_FILTER:
       // eslint-disable-next-line no-case-declarations
       const sortedFiles: Item[] = sortFilter(state.filesList, state.orderFiles)
-      return { ...state, filesList: [...sortedFiles] }
+      return { ...state, filesList: sortedFiles }
 
     case SET_SORT_ORDER_BY:
       return {
@@ -160,6 +161,14 @@ export default function reducer(state = filemanager, action: ActionTypes) {
 
     case SET_ITEM_VIEW:
       return { ...state, itemsView: action.view }
+
+    // 移动item
+    case MOVE_ITEM:
+      // eslint-disable-next-line no-case-declarations
+      const item: Item = state.filesList[action.oldIndex]
+      state.filesList.splice(action.oldIndex, 1)
+      state.filesList.splice(action.newIndex, 0, item)
+      return { ...state, filesList: [...state.filesList] }
     // 不做任何处理 需要loading 需要在此添加 case:xx_REQUEST 再做对应处理
     default:
       return state
@@ -167,7 +176,7 @@ export default function reducer(state = filemanager, action: ActionTypes) {
 }
 
 /**
- * 根据文件名、大小、创建日期(时间戳)，升序或者降序
+ * 根据文件名、大小、创建日期(时间戳)，升序或者降序,文件夹始终在最前面
  * @param filesList 文件夹内的所有待排序的文件对象
  * @param forder 排序方式
  * @return 排序结果
@@ -201,5 +210,13 @@ function sortFilter(filesList: Item[], order: Order): Item[] {
     default:
       break
   }
-  return order.orderBy === 'asc' ? filesList : filesList.reverse()
+  filesList = order.orderBy === 'asc' ? filesList : filesList.reverse()
+  // 文件夹放在最前
+  const folder: Item[] = []
+  const file: Item[] = []
+  filesList.forEach((item) => {
+    if (item.type === 'file') file.push(item)
+    else folder.push(item)
+  })
+  return [...folder, ...file]
 }

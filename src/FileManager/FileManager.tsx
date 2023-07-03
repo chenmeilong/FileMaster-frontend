@@ -4,7 +4,7 @@
  * @createDate 2023-01-15 17:13:28
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import {
   setSelectedFiles,
@@ -29,7 +29,8 @@ import {
   saveimage,
   listViewChange,
   clearBufferFiles,
-  setMessages
+  setMessages,
+  moveItem
 } from '../Redux/actions'
 import { Paper, Grid, Box, Collapse } from '@material-ui/core/'
 import { makeStyles } from '@material-ui/core/styles'
@@ -150,6 +151,7 @@ type Props = {
   listViewChange: (view: string) => void
   clearBufferFiles: () => void
   setMessages: (message: Messages) => void
+  moveItem: (oldIndex: number, newIndex: number) => void
 }
 
 const FileManager: React.FC<Props> = ({
@@ -186,7 +188,8 @@ const FileManager: React.FC<Props> = ({
   unzip,
   listViewChange,
   clearBufferFiles,
-  setMessages
+  setMessages,
+  moveItem
 }) => {
   const classes = useStyles()
   height = height !== undefined || height > 300 ? `${height}px` : '300px' //580px
@@ -282,8 +285,7 @@ const FileManager: React.FC<Props> = ({
       setMessages({
         title: `文件复制成功`,
         type: 'info',
-        message: '您可以把它粘贴到任何文件夹中',
-        timer: 3000
+        message: '您可以把它粘贴到任何文件夹中'
       })
     },
     // 剪切到buffer
@@ -292,8 +294,7 @@ const FileManager: React.FC<Props> = ({
       setMessages({
         title: `文件剪切成功`,
         type: 'info',
-        message: '您可以把它粘贴到任何文件夹中',
-        timer: 3000
+        message: '您可以把它粘贴到任何文件夹中'
       })
     },
     // 粘贴
@@ -306,8 +307,7 @@ const FileManager: React.FC<Props> = ({
           setMessages({
             title: `文件成功粘贴`,
             type: 'success',
-            message: '',
-            timer: 3000
+            message: ''
           })
         })
         .catch((error: AxiosError) => {
@@ -332,8 +332,7 @@ const FileManager: React.FC<Props> = ({
         setMessages({
           title: `文件加载成功`,
           type: 'success',
-          message: '',
-          timer: 3000
+          message: ''
         })
       })
     },
@@ -534,6 +533,11 @@ const FileManager: React.FC<Props> = ({
       getFilesList(selectedFolder)
       getFoldersList().then(() => {
         setLoading(false)
+        setMessages({
+          title: '',
+          type: 'info',
+          message: ''
+        })
       })
     },
     // 快速复制一个文件或文件夹
@@ -769,41 +773,71 @@ const FileManager: React.FC<Props> = ({
     // 拖动事件,拖动结束触发，目前还有些问题 todo
     // result 由拖动模块提供
     handleDragEnd: (result) => {
-      setLoading(!isloading)
+      console.log(result)
+      console.log('拖动结束事件')
+
+      setLoading(true)
       try {
+        let destinationType = ''
+        let destinationPath = ''
         let files: string[] = []
-        let destination
-        filesList.forEach((file) => {
-          // result.draggableId被拖动元素的唯一标识符（ID）
-          if (file.id === result.draggableId) {
-            files = [file.path]
-          }
-          // result.destination.droppableId  目标区域（容器）的唯一标识符。
-          if (file.id === result.destination.droppableId) {
-            destination = file.path
-          }
-        })
-        //todo 这里添加更多的校检可以解决报错问题,比如文件不能拖入文件内,文件夹不能拖入文件内
-        if (destination !== undefined && files.length !== 0) {
-          pasteFiles(files, 'cut', destination)
-            .then(() => {
-              operations.handleReload()
-              setMessages({
-                title: `文件移动成功`,
-                type: 'success',
-                message: '您拖动的文件已成功移动',
-                timer: 3000
+        // 分为排序拖动和移入文件夹拖动
+        if (result.combine) {
+          // 拖入文件夹内，但判断 combine是否为文件夹，是才支持拖入
+          filesList.forEach((file) => {
+            if (file.id === result.combine.draggableId) {
+              destinationType = file.type
+              destinationPath = file.path
+            }
+            if (file.id === result.draggableId) {
+              files = [file.path]
+            }
+          })
+          // 目标必须是文件夹
+          if (destinationType === 'folder') {
+            pasteFiles(files, 'cut', destinationPath)
+              .then(() => {
+                operations.handleReload()
+                // setMessages({
+                //   title: `文件移动成功`,
+                //   type: 'success',
+                //   message: '您拖动的文件已成功移动'
+                // })
               })
-            })
-            .catch(() => {
-              console.log('#####################')
-            })
+              .catch(() => {
+                console.log('拖动请求错误')
+              })
+          }
         }
+
+        // 排序
+        if (
+          result.destination &&
+          result.destination.index !== result.source.index
+        ) {
+          // 排序
+          moveItem(result.source.index, result.destination.index)
+        }
+
+        //todo 这里添加更多的校检可以解决报错问题,比如文件不能拖入文件内,文件夹不能拖入文件内
+        // if (destination !== undefined && files.length !== 0) {
+        //   pasteFiles(files, 'cut', destination)
+        //     .then(() => {
+        //       operations.handleReload()
+        //       setMessages({
+        //         title: `文件移动成功`,
+        //         type: 'success',
+        //         message: '您拖动的文件已成功移动'
+        //       })
+        //     })
+        //     .catch(() => {
+        //       console.log('拖动请求错误')
+        //     })
+        // }
       } catch (error) {
-        console.log('#####################')
+        console.log('拖动发生错误')
       }
-      setLoading(!isloading)
-      console.log('Drag ended', result)
+      setLoading(false)
     }
   }
 
@@ -1180,7 +1214,8 @@ const FileManagerConnect = connect(
     unzip,
     listViewChange,
     clearBufferFiles,
-    setMessages
+    setMessages,
+    moveItem
   }
 )(FileManager)
 
