@@ -88,7 +88,6 @@ const UploadFiles: React.FC<Props> = ({
     accept: { 'image/*': ['.png', '.gif', '.jpeg', '.jpg'] },
     // 当用户拖放或选择文件时触发此回调函数
     onDrop: (acceptedFiles) => {
-      console.log('acceptedFiles', acceptedFiles)
       // preview 属性添加到file对象中  URL.createObjectURL创建的一个临时 URL。这个 URL 可以作为文件预览（例如，显示图像）的来源
       const newfiles: FileWithPreview[] = acceptedFiles.map((file) =>
         Object.assign(file, {
@@ -102,7 +101,6 @@ const UploadFiles: React.FC<Props> = ({
   const removeFile = (index: number) => {
     const newFiles: FileWithPreview[] = [...files]
     newFiles.splice(index, 1)
-    console.log(newFiles, files)
     setFiles(newFiles)
   }
   // 待上传文件list显示

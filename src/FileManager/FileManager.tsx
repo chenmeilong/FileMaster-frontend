@@ -507,7 +507,6 @@ const FileManager: React.FC<Props> = ({
             })
           })
       }
-      // ?????
       handleClickPopupOpen({
         title: `重命名 ${item.name}`,
         description: '',
@@ -646,31 +645,24 @@ const FileManager: React.FC<Props> = ({
       const isImage = checkSelectedFileType('image')
       unsetSelectedFiles()
       const description = `
-                <ul class="list">
-                    <li><b>Name</b> : ${file.name}</li>
-                    <li><b>Path</b> : ${file.path}</li>
-                    ${
-                      file.type === 'file'
-                        ? `<li><b>Size</b> : ${formatBytes(
-                            file?.size || 0
-                          )}</li>
-                    <li><b>Extension</b> : ${file.extension}</li>`
-                        : ''
-                    }
-                    <li><b>Created</b> : ${convertDate(file.created)}</li>
-                    <li><b>Modified</b> : ${convertDate(file.modified)}</li>
-                    <li><b>Permissions</b> : Others - ${
-                      file.premissions.others
-                    }, Group - ${file.premissions.group}, Owner - ${
-        file.premissions.owner
-      }</li>
-                </ul>
-                ${
-                  isImage
-                    ? `<img src="${mainconfig.serverPath}${file.path}" />`
-                    : ''
-                }
-            `
+        <ul class="list">
+          <li><b>文件名</b> : ${file.name}</li>
+          <li><b>路径</b> : ${file.path}</li>
+          ${
+            file.type === 'file'
+              ? `<li><b>大小</b> : ${formatBytes(
+                  file?.size || 0
+                )}</li><li><b>Extension</b> : ${file.extension}</li>`
+              : ''
+          }
+          <li><b>创建时间</b> : ${convertDate(file.created)}</li>
+          <li><b>修改时间</b> : ${convertDate(file.modified)}</li>
+          <li><b>权限</b> : Others - ${file.premissions.others}, Group - ${
+        file.premissions.group
+      }, Owner - ${file.premissions.owner}</li>
+        </ul>
+        ${isImage ? `<img src="${mainconfig.serverPath}${file.path}" />` : ''}
+        `
       handleClickPopupOpen({
         title: `文件: ${file.name}`,
         description,

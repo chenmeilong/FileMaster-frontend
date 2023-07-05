@@ -15,6 +15,7 @@ import Zoom from '@material-ui/core/Zoom'
 import { ZoomProps } from '@material-ui/core/Zoom'
 import { Popup } from '../types'
 import { TextField } from '@material-ui/core'
+import useStyles from './Styles'
 // 打开dialog 从小到大的动画效果
 const Transition: any = forwardRef(function Transition(
   props: ZoomProps,
@@ -31,6 +32,7 @@ const AlertDialogSlide: React.FC<Popup> = ({
   // 名称输入配置
   nameInputSets
 }) => {
+  const classes = useStyles()
   const nameValue =
     typeof nameInputSets.value !== undefined ? nameInputSets.value : ''
   // 文件名 状态 使用useState实现数据双向绑定
@@ -51,9 +53,13 @@ const AlertDialogSlide: React.FC<Popup> = ({
       >
         <DialogTitle className="dialogTitle">{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText className="dialogDescription">
-            {description}
-          </DialogContentText>
+          <div className="dialogDescription">
+            {/* {description} */}
+            <div
+              className={classes.dialogDescription}
+              dangerouslySetInnerHTML={{ __html: description }}
+            ></div>
+          </div>
           {nameInputSets.value && (
             <div className="form-group">
               <TextField
