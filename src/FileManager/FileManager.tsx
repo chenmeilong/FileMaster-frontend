@@ -633,7 +633,7 @@ const FileManager: React.FC<Props> = ({
       unsetSelectedFiles()
       handleClickPopupOpen({
         title: `图片: ${file.name}`,
-        description: `<img src="${mainconfig.serverPath}${file.path}" />`,
+        description: `<img crossorigin="anonymous" src="${mainconfig.serverPath}${file.path}" />`,
         handleClose: handleClose,
         handleSubmit: null,
         nameInputSets: {}
@@ -661,7 +661,11 @@ const FileManager: React.FC<Props> = ({
         file.premissions.group
       }, Owner - ${file.premissions.owner}</li>
         </ul>
-        ${isImage ? `<img src="${mainconfig.serverPath}${file.path}" />` : ''}
+        ${
+          isImage
+            ? `<img crossorigin="anonymous"  src="${mainconfig.serverPath}${file.path}" />`
+            : ''
+        }
         `
       handleClickPopupOpen({
         title: `文件: ${file.name}`,
