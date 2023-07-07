@@ -1,8 +1,9 @@
 /**
  * @author MilesChen
- * @description 图片编辑按钮组 todo 与 ButtonGroupSimple.tsx文件合并为一个组件
+ * @description 图片编辑按钮组
  * @createDate 2023-02-13 20:37:09
  */
+// todo 改组件可以和 与 ButtonGroupSimple.tsx文件合并为一个组件
 
 import React from 'react'
 import Icon from '@material-ui/core/Icon'

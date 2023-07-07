@@ -40,7 +40,6 @@ type Props = {
   doubleClick: (value: string, history?: boolean) => void
   filesList: Item[]
   itemsView: 'list' | 'grid'
-  // 右键点击事件 todo 与浏览器冲突
   onContextMenuClick: (event: {
     stopPropagation: () => void
     preventDefault: () => void

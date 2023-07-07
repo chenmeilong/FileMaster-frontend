@@ -107,7 +107,6 @@ const TopBar: React.FC<Props> = ({
     setSorting(orderFiles.orderBy, field)
     // 给 store中的filesList 排序
     filterSorting()
-    // 刷新 todo
   }
   // 关闭弹窗
   const handleClose = () => {

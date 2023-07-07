@@ -811,25 +811,8 @@ const FileManager: React.FC<Props> = ({
           result.destination &&
           result.destination.index !== result.source.index
         ) {
-          // 排序
           moveItem(result.source.index, result.destination.index)
         }
-
-        //todo 这里添加更多的校检可以解决报错问题,比如文件不能拖入文件内,文件夹不能拖入文件内
-        // if (destination !== undefined && files.length !== 0) {
-        //   pasteFiles(files, 'cut', destination)
-        //     .then(() => {
-        //       operations.handleReload()
-        //       setMessages({
-        //         title: `文件移动成功`,
-        //         type: 'success',
-        //         message: '您拖动的文件已成功移动'
-        //       })
-        //     })
-        //     .catch(() => {
-        //       console.log('拖动请求错误')
-        //     })
-        // }
       } catch (error) {
         console.log('拖动发生错误')
       }
