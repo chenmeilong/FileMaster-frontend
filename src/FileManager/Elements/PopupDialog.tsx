@@ -51,15 +51,12 @@ const AlertDialogSlide: React.FC<Popup> = ({
         onClose={handleClose}
         className="dialogBlock"
       >
-        <DialogTitle className="dialogTitle">{title}</DialogTitle>
+        <DialogTitle className={classes.dialogTitle}>{title}</DialogTitle>
         <DialogContent>
-          <div className="dialogDescription">
-            {/* {description} */}
-            <div
-              className={classes.dialogDescription}
-              dangerouslySetInnerHTML={{ __html: description }}
-            ></div>
-          </div>
+          <div
+            className={classes.dialogDescription}
+            dangerouslySetInnerHTML={{ __html: description }}
+          ></div>
           {nameInputSets.value && (
             <div className="form-group">
               <TextField

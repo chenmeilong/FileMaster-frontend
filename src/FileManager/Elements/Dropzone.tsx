@@ -81,7 +81,6 @@ const UploadFiles: React.FC<Props> = ({
   const classes = useStyles()
 
   // 存放当前选择的文件对象 blob 但是里面新增了个属性 preview
-  //
   const [files, setFiles] = useState<FileWithPreview[]>([])
   const { getRootProps, getInputProps } = useDropzone({
     // 只接收指定类型文件
