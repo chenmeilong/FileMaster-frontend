@@ -29,7 +29,7 @@
 <img src="https://img.shields.io/badge/react--dropzone-14.2.3-yellow"/>
 </div>
 <hr>
-<img src="" width="100%;"/>
+<img src="./img/demo.gif" width="100%;"/>
 
 ## 功能
 - 可展开的文件夹树
@@ -64,7 +64,10 @@
 
 ## 自定义中间件架构图
 
-![](./img/redux.jpg)
+<div align="center">
+<img src="./img/redux.jpg" />
+</div>
+
 
 
 ## 待办
