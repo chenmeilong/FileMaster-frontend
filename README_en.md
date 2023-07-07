@@ -29,7 +29,7 @@
 <img src="https://img.shields.io/badge/react--dropzone-14.2.3-yellow"/>
 </div>
 <hr>
-<img src="" width="100%;"/>
+<img src="./img/demo.gif" width="100%;"/>
 
 ## Feature
 - Expandable folder tree
@@ -60,7 +60,10 @@
 > `pnpm dev` or `yarn dev`
 
 ## Custom middleware architecture diagram
-! [](. /img/redux.jpg)
+<div align="center">
+<img src="./img/redux.jpg" />
+</div>
+
 
 ## To be done
 - [X] custom middleware to implement API request actionization, improve API maintainability
