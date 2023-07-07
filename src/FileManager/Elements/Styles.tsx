@@ -199,6 +199,7 @@ const style = makeStyles(() => ({
     float: 'right'
   },
   dialogDescription: {
+    paddingBottom: '20px',
     '& .list': {
       textAlign: 'left'
     },
@@ -206,6 +207,9 @@ const style = makeStyles(() => ({
       maxWidth: '100%',
       display: 'block'
     }
+  },
+  dialogTitle: {
+    paddingBottom: '0px'
   }
 }))
 

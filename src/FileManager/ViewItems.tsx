@@ -40,7 +40,6 @@ type Props = {
   doubleClick: (value: string, history?: boolean) => void
   filesList: Item[]
   itemsView: 'list' | 'grid'
-  // 右键点击事件 todo 与浏览器冲突
   onContextMenuClick: (event: {
     stopPropagation: () => void
     preventDefault: () => void
@@ -160,7 +159,10 @@ const ViewItems: React.FC<Props> = ({
                 />
               )}
               <div className={classes.infoBox}>
-                <img src={getIcon(item, snapshot.combineTargetFor)} />
+                <img
+                  crossOrigin="anonymous"
+                  src={getIcon(item, snapshot.combineTargetFor)}
+                />
               </div>
               <Tooltip
                 title={
@@ -220,6 +222,7 @@ const ViewItems: React.FC<Props> = ({
               </TableCell>
               <TableCell className={classes.icoTableCell}>
                 <img
+                  crossOrigin="anonymous"
                   style={{ width: '20px' }}
                   src={getIcon(item, snapshot.combineTargetFor)}
                 />
