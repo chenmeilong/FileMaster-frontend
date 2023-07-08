@@ -1,6 +1,6 @@
 name: FileMaster frontend 生产环境部署
-
-# on: # 监听 main 分支上的 push 事件
+ # 监听 main 分支上的 push 事件
+on:
   push:
     branches:
       - dev
