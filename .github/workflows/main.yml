@@ -1,9 +1,10 @@
-name: FileMaster frontend 生产环境部署
-
-# on: # 监听 main 分支上的 push 事件
+name:
+  FileMaster frontend 生产环境部署
+# 监听 dev 分支上的 push 事件
+# on:
 #   push:
 #     branches:
-#       - main
+#       - dev
 # 监听 main 分支上的 pull_request 事件
 on:
   pull_request:
@@ -13,7 +14,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy to server
         # 使用ssh-deploy@v2.2.5版本更加稳定
-        uses: easingthemes/ssh-deploy@v2.2.5
+        uses: easingthemes/ssh-deploy@main
         env:
           # 私钥
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
