@@ -1,14 +1,15 @@
-name: FileMaster frontend 生产环境部署
- # 监听 main 分支上的 push 事件
-on:
-  push:
-    branches:
-      - dev
-# 监听 main 分支上的 pull_request 事件
+name:
+  FileMaster frontend 生产环境部署
+  # 监听 dev 分支上的 push 事件
 # on:
-#   pull_request:
-#     types:
-#       - closed
+#   push:
+#     branches:
+#       - dev
+# 监听 main 分支上的 pull_request 事件
+on:
+  pull_request:
+    types:
+      - closed
 # 分支合并后后执行一系列的任务
 jobs:
   build-and-deploy:
