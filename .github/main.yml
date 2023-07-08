@@ -1,0 +1,46 @@
+name: FileMaster frontend 生产环境部署
+
+# on: # 监听 main 分支上的 push 事件
+#   push:
+#     branches:
+#       - main
+# 监听 main 分支上的 pull_request 事件
+on:
+  pull_request:
+    types:
+      - closed
+# 分支合并后后执行一系列的任务
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pnpm i
+
+      # 暂时没有编写test程序，可跳过
+      # - name: Test
+      #   run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to server
+        # 使用ssh-deploy@v2.2.5版本更加稳定
+        uses: easingthemes/ssh-deploy@v2.2.5
+        env:
+          # 私钥
+          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          # SCP参数
+          ARGS: '-avzr --delete'
+          # 源目录
+          SOURCE: 'dist/'
+          # 服务器ip
+          REMOTE_HOST: ${{ secrets.REMOTE_TXHOST }}
+          # 用户
+          REMOTE_USER: 'root'
+          # 目标地址
+          TARGET: '/www/wwwroot/fm.mileschen.cn'
