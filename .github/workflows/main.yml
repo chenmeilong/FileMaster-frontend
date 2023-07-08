@@ -39,7 +39,7 @@ jobs:
 
       - name: Deploy to server
         # 使用ssh-deploy@v2.2.5版本更加稳定
-        uses: easingthemes/ssh-deploy@v2.2.5
+        uses: easingthemes/ssh-deploy@main
         env:
           # 私钥
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
@@ -52,4 +52,4 @@ jobs:
           # 用户
           REMOTE_USER: 'root'
           # 目标地址
-          TARGET: '/www/wwwroot/fm.mileschen.cn/'
+          TARGET: '/www/wwwroot/fm.mileschen.cn'
