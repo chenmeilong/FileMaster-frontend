@@ -1,14 +1,14 @@
 name: FileMaster frontend 生产环境部署
 
 # on: # 监听 main 分支上的 push 事件
-#   push:
-#     branches:
-#       - main
+  push:
+    branches:
+      - dev
 # 监听 main 分支上的 pull_request 事件
-on:
-  pull_request:
-    types:
-      - closed
+# on:
+#   pull_request:
+#     types:
+#       - closed
 # 分支合并后后执行一系列的任务
 jobs:
   build-and-deploy:
@@ -52,4 +52,4 @@ jobs:
           # 用户
           REMOTE_USER: 'root'
           # 目标地址
-          TARGET: '/www/wwwroot/fm.mileschen.cn'
+          TARGET: '/www/wwwroot/fm.mileschen.cn/'
