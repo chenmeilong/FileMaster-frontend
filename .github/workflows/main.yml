@@ -48,13 +48,13 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         env:
           # 私钥
-          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KE }}
+          SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           # SCP参数
           ARGS: '-avzr --delete'
           # 源目录
           SOURCE: 'dist/'
           # 服务器ip
-          REMOTE_HOST: ${{ secrets.REMOTE_TXHOS }}
+          REMOTE_HOST: ${{ secrets.REMOTE_TXHOST }}
           # 用户
           REMOTE_USER: 'root'
           # 目标地址
