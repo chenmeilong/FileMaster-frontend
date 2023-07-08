@@ -1,6 +1,5 @@
-name:
-  FileMaster frontend 生产环境部署
-  # 监听 main 分支上的 push 事件
+name: FileMaster frontend 生产环境部署
+ # 监听 main 分支上的 push 事件
 on:
   push:
     branches:
@@ -58,4 +57,4 @@ jobs:
           # 用户
           REMOTE_USER: 'root'
           # 目标地址
-          TARGET: '/www'
+          TARGET: '/www/wwwroot/fm.mileschen.cn'
