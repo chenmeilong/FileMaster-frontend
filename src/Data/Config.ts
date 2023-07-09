@@ -1,3 +1,6 @@
 export default {
-  serverPath: 'http://localhost:3131'
+  serverPath:
+    process.env.NODE_ENV === 'production'
+      ? 'http://apifm.mileschen.cn'
+      : 'http://localhost:3131'
 }
