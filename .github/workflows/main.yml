@@ -1,5 +1,4 @@
-name:
-  FileMaster frontend 生产环境部署
+name: FileMaster frontend 生产环境部署
 # 监听 dev 分支上的 push 事件
 # on:
 #   push:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: 安装node.js
+      - name: Install node.js
         # 使用action库  actions/setup-node安装node
         uses: actions/setup-node@main
         with:
