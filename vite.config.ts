@@ -14,17 +14,20 @@ export default {
     // 开css sourcemap方便找css
     devSourcemap: true
   },
-  // 打包不压缩，有利于学习
+  // 打包不压缩，有利于学习和debug
   build: {
-    // "minify":true,
+    // minify: false,
     // 分包
     rollupOptions: {
       output: {
-        manualChunks: (id: string) => {
-          // TS默认为ES5,需要手动去tsconfig.json配置 "lib"
-          if (id.includes('node_modules')) {
-            return 'vendor'
-          }
+        // manualChunks: (id: string) => {
+        //   // TS默认为ES5,需要手动去tsconfig.json配置 "lib"
+        //   if (id.includes('node_modules')) {
+        //     return 'vendor'
+        //   }
+        // }
+        manualChunks: {
+          editor: ['@toast-ui/react-image-editor']
         }
       }
     }
@@ -41,15 +44,16 @@ export default {
     }),
     importToCDN({
       modules: [
-        // {
-        //     name: '@toast-ui/react-image-editor',
-        //     // 全局变量如Jquery的$
-        //     var: 'e',
-        //     path: `https://cdn.jsdelivr.net/npm/@toast-ui/react-image-editor@3.15.2/dist/toastui-react-image-editor.min.js`
-        // },
         autoComplete('react'),
         autoComplete('react-dom'),
         autoComplete('axios')
+        //不能CDN此文件这个 虽然他很大，几倍于其他文件，但是他依赖太多
+        // {
+        //     name: 'tui-image-editor',
+        //     // 全局变量如Jquery的$
+        //     var: 'tui',
+        //     path: `https://cdn.jsdelivr.net/npm/tui-image-editor@3.15.3/dist/tui-image-editor.min.js`
+        // },
       ]
     })
   ], // 使用 React 插件
