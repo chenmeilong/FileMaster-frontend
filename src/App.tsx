@@ -13,7 +13,7 @@ const App: React.FC = () => {
   }
   return (
     <div>
-      <FileManager height="580" debugCallBack={debugCallBack} />
+      <FileManager height="590" debugCallBack={debugCallBack} />
     </div>
   )
 }
